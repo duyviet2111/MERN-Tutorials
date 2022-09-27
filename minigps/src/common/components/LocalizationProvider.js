@@ -2,8 +2,8 @@
 import React, {
   createContext, useContext, useEffect, useMemo,
 } from 'react';
-// import moment from 'moment';
-// import 'moment/min/locales.min';
+import moment from 'moment';
+import 'moment/min/locales.min';
 
 import en from '../../resources/l10n/en.json';
 import ja from '../../resources/l10n/ja.json';
@@ -46,15 +46,15 @@ export const LocalizationProvider = ({ children }) => {
 
   const value = useMemo(() => ({ languages, language, setLanguage }), [languages, language, setLanguage]);
 
-  // useEffect(() => {
-  //   let selected;
-  //   if (language.length > 2) {
-  //     selected = `${language.slice(0, 2)}-${language.slice(-2).toLowerCase()}`;
-  //   } else {
-  //     selected = language;
-  //   }
-  //   moment.locale([selected, 'ja']);
-  // }, [language]);
+  useEffect(() => {
+    let selected;
+    if (language.length > 2) {
+      selected = `${language.slice(0, 2)}-${language.slice(-2).toLowerCase()}`;
+    } else {
+      selected = language;
+    }
+    moment.locale([selected, 'ja']);
+  }, [language]);
 
   return (
     <LocalizationContext.Provider value={value}>

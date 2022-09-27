@@ -13,8 +13,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../common/components/LocalizationProvider';
+import { useCatch } from '../reactHelper';
+// import axios from "axios";
 
 const Copyright = (props) => {
   return (
@@ -38,9 +40,8 @@ const theme = createTheme();
 
 
 const RegisterPage = () => {
-  const axios = require("axios").default;
   const navigate = useNavigate();
-  // const { t } = useTranslation();
+  const t = useTranslation();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,37 +53,52 @@ const RegisterPage = () => {
   const [failed, setFailed] = useState(false);
   const [failMsg, setFailMsg] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios({
-      method: "POST",
-      url: "http://159.65.134.221:8082/api/users",
-      headers: { "Content-Type": "application/json" },
-      data: {
-        name,
-        email,
-        password,
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   axios({
+  //     method: "POST",
+  //     url: "http://159.65.134.221:8082/api/users",
+  //     headers: { "Content-Type": "application/json" },
+  //     data: {
+  //       name,
+  //       email,
+  //       password,
+  //     },
+  //   })
+  //     .then(function (response) {
+  //         alert("Register Susscess!");
+  //         navigate('/login');
+  //       console.log(response);
+  //     })
+  //     .catch(function (error) {
+  //       setFailed(true);
+  //       setFailMsg(error.message);
+  //       setPassword('');
+  //       console.log(error);
+  //     });
+  // };
+  const handleSubmit = useCatch(async () => {
+    const response = await fetch('http://159.65.134.221:8082/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
+    if (response.ok) {
+      // setDialogOpen(true);
+      const user = await response.json();
+      const sendMailResponse = await fetch('/api/users/sendActiveCode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user),
       },
-    })
-      .then(function (response) {
-          alert("Register Susscess!");
-          navigate('/');
-        console.log(response);
-      })
-      .catch(function (error) {
-        setFailed(true);
-        setFailMsg(error.message);
-        setPassword('');
-        console.log(error);
-      });
-  };
-
-
-  // const data = new FormData(event.currentTarget);
-  // console.log({
-  //   email: data.get("email"),
-  //   password: data.get("password"),
-  // });
+      navigate('/login'));
+      if (!sendMailResponse.ok) {
+        throw Error(await sendMailResponse.text());
+      }
+    } else {
+      throw Error(await response.text());
+    }
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -109,7 +125,7 @@ const RegisterPage = () => {
                   required
                   fullWidth
                   name="name"
-                  label="Name"
+                  label={t('sharedName')}
                   autoFocus
                   value={name}
                   onChange={(event) => setName(event.target.value)}
@@ -120,7 +136,7 @@ const RegisterPage = () => {
                   required
                   fullWidth
                   error={failed}
-                  label="Email Address"
+                  label={t('userEmail')}
                   name="email"
                   value={email}
                   helperText={failed && failMsg}
@@ -133,7 +149,7 @@ const RegisterPage = () => {
                   fullWidth
                   error={failed}
                   name="password"
-                  label="Password"
+                  label={t('userPassword')}
                   type="password"
                   value={password}
                   onChange={(event) => {
@@ -180,7 +196,7 @@ const RegisterPage = () => {
                       color="primary"
                     />
                   }
-                  label="Password must contains 3 or more of uppercase, lowercase, numbers, and symbols."
+                  label={t('passWordValidation')}
                 />
                 <FormControlLabel
                   control={
@@ -190,14 +206,14 @@ const RegisterPage = () => {
                       color="primary"
                     />
                   }
-                  label="Password must at least 8 characters."
+                  label={t('passWordValidLength')}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   name="confirmPassword"
-                  label="Confirm Password"
+                  label={t('userConfirmPassword')}
                   type="password"
                   value={confirmPassword}
                   onChange={(event) => {
@@ -210,7 +226,7 @@ const RegisterPage = () => {
                   }}
                 />
                 <FormControlLabel
-                  label="Password Matches"
+                  label={t('passWordMatches')}
                   control={<Checkbox id="matches" checked={isMatches} />}
                 />
               </Grid>
@@ -228,11 +244,11 @@ const RegisterPage = () => {
               }
               sx={{ mt: 1, mb: 2 }}
             >
-              REGISTER
+             {t('loginRegister')}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

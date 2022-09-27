@@ -1,6 +1,7 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
+// import { Snackbar } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
@@ -16,6 +17,9 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import useQuery from "../common/util/useQuery";
+import { useTranslation } from "../common/components/LocalizationProvider";
+import { snackBarDurationShortMs } from "../common/util/duration";
+import { useCatch } from '../reactHelper';
 
 const Copyright = (props) => {
   return (
@@ -39,11 +43,14 @@ const theme = createTheme();
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
+  const t = useTranslation();
   const query = useQuery();
+
   const token = query.get("passwordReset");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -76,13 +83,10 @@ const ResetPasswordPage = () => {
         ),
       });
     }
-
-    // const data = new FormData(event.currentTarget);
-    // console.log({
-    //   email: data.get("email"),
-    //   password: data.get("password"),
-    // });
+    // setSnackbarOpen(true);
   };
+
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -99,21 +103,17 @@ const ResetPasswordPage = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            <IconButton color="primary" onClick={() => navigate("/")}>
+            <IconButton color="primary" onClick={() => navigate("/login")}>
               <ArrowBackIcon />
             </IconButton>
-            Reset Password
+            {t("loginReset")}
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" noValidate sx={{ mt: 1 }}>
             {!token ? (
               <TextField
                 required
                 fullWidth
-                label="User Email"
+                label={t("userEmail")}
                 name="email"
                 value={email}
                 autoComplete="email"
@@ -123,7 +123,7 @@ const ResetPasswordPage = () => {
               <TextField
                 required
                 fullWidth
-                label="userPassword"
+                label={t("userPassword")}
                 name="password"
                 value={password}
                 type="password"
@@ -139,10 +139,16 @@ const ResetPasswordPage = () => {
               sx={{ mt: 3, mb: 2 }}
               onClick={handleSubmit}
             >
-              RESET PASSWORD
+              {t("loginReset")}
             </Button>
           </Box>
         </Box>
+        {/* <Snackbar
+          open={snackbarOpen}
+          onClose={() => navigate("/login")}
+          autoHideDuration={snackBarDurationShortMs}
+          message={!token ? t("loginResetSuccess") : t("loginUpdateSuccess")}
+        /> */}
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>

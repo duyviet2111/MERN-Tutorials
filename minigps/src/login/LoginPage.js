@@ -1,10 +1,14 @@
 import * as React from "react";
+import {
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  Button,
+  TextField,
+} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,12 +16,17 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import usePersistedState from "../common/util/usePersistedState";
 import axios from "axios";
-
+import {
+  useLocalization,
+  useTranslation,
+} from "../common/components/LocalizationProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { sessionActions } from "../store";
+// import {nativePostMessage } from "../common/components/NativeInterface";
 const Copyright = (props) => {
   return (
     <Typography
@@ -39,53 +48,80 @@ const Copyright = (props) => {
 const theme = createTheme();
 
 const LoginPage = () => {
-  const { t } = useTranslation();
+  const t = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const { languages, language, setLanguage } = useLocalization();
+  const languageList = Object.entries(languages).map((values) => ({
+    code: values[0],
+    name: values[1].name,
+  }));
+  const languageEnabled = useSelector(
+    (state) => !state.session.server.attributes["ui.disableLoginLanguage"]
+  );
   const [email, setEmail] = usePersistedState("loginEmail", "");
   const [failed, setFailed] = useState(false);
   const [failMsg, setFailMsg] = useState("");
   const [password, setPassword] = useState("");
-  
 
-  
-  useEffect(() => {
-    const connect = () => {
-      axios
-        .get("http://159.65.134.221:8082/api/server")
-        .then(function (response) {
-          console.log(response.data);
-          
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    };
-    connect();
-  }, []);
-  
+  // const registrationEnabled = useSelector((state) => state.session.server.registration);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios({
-      method: "POST",
-      url: "http://159.65.134.221:8082/api/session",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      data: new URLSearchParams(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`),
-    })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-  
-  // const handleSpecialKey = (e) => {
-  //   if (e.keyCode === 13 && email && password) {
-  //     handleSubmit(e);
-  //   }
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   axios({
+  //     method: "POST",
+  //     url: "http://159.65.134.221:8082/api/session",
+  //     headers: {
+  //       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+  //     },
+  //     data: new URLSearchParams(
+  //       `email=${encodeURIComponent(email)}&password=${encodeURIComponent(
+  //         password
+  //       )}`
+  //     ),
+  //   })
+  //     .then(function (response) {
+  //       const user = response.json();
+  //       dispatch(sessionActions.updateUser(user));
+  //       navigate("/");
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error);
+  //       setFailed(true);
+  //       setFailMsg(error.message);
+  //       setPassword("");
+  //     });
   // };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://159.65.134.221:8082/api/session', {
+        method: 'POST',
+        body: new URLSearchParams(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`),
+      });
+      if (response.ok) {
+        const user = await response.json();
+        dispatch(sessionActions.updateUser(user));
+        // nativePostMessage('login');
+        navigate('/');
+      } else {
+        if (response.status === 400) {
+          throw Error(t('disabled'));
+        }
+        throw Error(t('invalid'));
+      }
+    } catch (error) {
+      setFailed(true);
+      setFailMsg(error.message);
+      setPassword('');
+    }
+  };  
+  const handleSpecialKey = (e) => {
+    if (e.keyCode === 13 && email && password) {
+      handleSubmit(e);
+    }
+  };
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -104,62 +140,70 @@ const LoginPage = () => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box component="form" noValidate sx={{ mt: 1 }}>
             <TextField
-              margin="normal"
               required
-              fullWidth
               error={failed}
-              id="email"
-              label="Email Address"
-              name="email"
+              margin="normal"
+              label={t('userEmail')}
+              fullWidth
+              value={email}
               autoComplete="email"
-              autoFocus
+              name="email"
+              autoFocus={!email}
               helperText={failed && failMsg}
               onChange={(e) => setEmail(e.target.value)}
-              // onKeyUp={handleSpecialKey}
+              onKeyUp={handleSpecialKey}
             />
             <TextField
               margin="normal"
               required
               fullWidth
               error={failed}
-              id="password"
-              label="Password"
+              value={password}
+              label={t('userPassword')}
               name="password"
               autoComplete="current-password"
-              autoFocus
+              autoFocus={!!email}
               type="password"
               onChange={(e) => setPassword(e.target.value)}
-              // onKeyUp={handleSpecialKey}
+              onKeyUp={handleSpecialKey}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember Me"
-            />
+            {languageEnabled && (
+              <FormControl fullWidth margin="normal" >
+                <InputLabel>{t("loginLanguage")}</InputLabel>
+                <Select
+                  label={t("loginLanguage")}
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                >
+                  {languageList.map((it) => (
+                    <MenuItem key={it.code} value={it.code}>
+                      {it.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               onClick={handleSubmit}
-              // onKeyUp={handleSpecialKey}
+              onKeyUp={handleSpecialKey}
             >
-              Sign In
+              {t('loginLogin')}
             </Button>
             <Grid container>
               <Grid item xs>
                 <Link href="/register" variant="body2">
-                  REGISTER
+                {t('loginRegister')}
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/rspassword" variant="body2">
-                  RESET PASSWORD
+                <Link href="/reset-password" variant="body2">
+                {t('loginReset')}
                 </Link>
               </Grid>
             </Grid>
