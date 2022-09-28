@@ -56,20 +56,22 @@ const EventReportPage = () => {
   }, []);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to, type }) => {
+    let headers = new Headers();
+    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ deviceId, from, to });
     eventTypes.forEach((it) => query.append('type', it));
     if (type === 'export') {
       window.location.assign(`/api/reports/events/xlsx?${query.toString()}`);
     } else if (type === 'mail') {
-      const response = await fetch(`/api/reports/events/mail?${query.toString()}`);
+      const response = await fetch(`http://159.65.134.221:8082/api/reports/events/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
       }
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`/api/reports/events?${query.toString()}`, {
-          headers: { Accept: 'application/json' },
+        const response = await fetch(`http://159.65.134.221:8082/api/reports/events?${query.toString()}`, {
+          headers: headers,
         });
         if (response.ok) {
           setItems(await response.json());

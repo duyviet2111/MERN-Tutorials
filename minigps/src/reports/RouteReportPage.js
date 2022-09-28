@@ -24,6 +24,8 @@ import { useCatch } from '../reactHelper';
 import ReportsMenu from './components/ReportsMenu';
 import PageLayout from '../common/components/PageLayout'
 
+let base64 = require('base-64');
+
 const RouteReportPage = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -42,19 +44,21 @@ const RouteReportPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to, type }) => {
+    let headers = new Headers();
+    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ deviceId, from, to });
     if (type === 'export') {
       window.location.assign(`/api/reports/route/xlsx?${query.toString()}`);
     } else if (type === 'mail') {
-      const response = await fetch(`/api/reports/route/mail?${query.toString()}`);
+      const response = await fetch(`http://159.65.134.221:8082/api/reports/route/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
       }
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`/api/reports/route?${query.toString()}`, {
-          headers: { Accept: 'application/json' },
+        const response = await fetch(`http://159.65.134.221:8082/api/reports/route?${query.toString()}`, {
+          headers: headers,
         });
         if (response.ok) {
           setItems(await response.json());

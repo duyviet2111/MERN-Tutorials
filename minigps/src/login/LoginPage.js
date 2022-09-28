@@ -19,7 +19,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import usePersistedState from "../common/util/usePersistedState";
-import axios from "axios";
 import {
   useLocalization,
   useTranslation,
@@ -67,32 +66,6 @@ const LoginPage = () => {
 
   // const registrationEnabled = useSelector((state) => state.session.server.registration);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   axios({
-  //     method: "POST",
-  //     url: "http://159.65.134.221:8082/api/session",
-  //     headers: {
-  //       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-  //     },
-  //     data: new URLSearchParams(
-  //       `email=${encodeURIComponent(email)}&password=${encodeURIComponent(
-  //         password
-  //       )}`
-  //     ),
-  //   })
-  //     .then(function (response) {
-  //       const user = response.json();
-  //       dispatch(sessionActions.updateUser(user));
-  //       navigate("/");
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //       setFailed(true);
-  //       setFailMsg(error.message);
-  //       setPassword("");
-  //     });
-  // };
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {

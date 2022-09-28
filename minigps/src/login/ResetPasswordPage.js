@@ -1,12 +1,11 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-// import { Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
@@ -50,7 +49,7 @@ const ResetPasswordPage = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -83,9 +82,28 @@ const ResetPasswordPage = () => {
         ),
       });
     }
-    // setSnackbarOpen(true);
+    setSnackbarOpen(true);
   };
-
+  // const handleSubmit = useCatch(async (event) => {
+  //   event.preventDefault();
+  //   let response;
+  //   if (!token) {
+  //     response = await fetch('http://159.65.134.221:8082/api/password/reset', {
+  //       method: 'POST',
+  //       body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
+  //     });
+  //   } else {
+  //     response = await fetch('http://159.65.134.221:8082/api/password/update', {
+  //       method: 'POST',
+  //       body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
+  //     });
+  //   }
+  //   if (response.ok) {
+  //     // setSnackbarOpen(true);
+  //   } else {
+  //     throw Error(await response.text());
+  //   }
+  // });
 
   return (
     <ThemeProvider theme={theme}>
@@ -143,12 +161,12 @@ const ResetPasswordPage = () => {
             </Button>
           </Box>
         </Box>
-        {/* <Snackbar
+        <Snackbar
           open={snackbarOpen}
           onClose={() => navigate("/login")}
           autoHideDuration={snackBarDurationShortMs}
           message={!token ? t("loginResetSuccess") : t("loginUpdateSuccess")}
-        /> */}
+        />
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>

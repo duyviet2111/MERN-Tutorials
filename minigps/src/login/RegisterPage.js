@@ -86,7 +86,7 @@ const RegisterPage = () => {
     if (response.ok) {
       // setDialogOpen(true);
       const user = await response.json();
-      const sendMailResponse = await fetch('/api/users/sendActiveCode', {
+      const sendMailResponse = await fetch('http://159.65.134.221:8082/api/users/sendActiveCode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user),

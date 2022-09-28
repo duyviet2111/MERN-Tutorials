@@ -30,6 +30,7 @@ import GroupPage from "./settings/GroupPage";
 import ServerPage from "./settings/ServerPage";
 import NotificationPage from "./settings/NotificationPage";
 import GeofencesPage from "./others/GeofencesPage";
+import PositionPage from "./others/PositionPage";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -81,8 +82,8 @@ const Navigation = () => {
       <Route path="/" element={<App />}>
         <Route index element={<MainPage />} />
 
-        {/* <Route path="position/:id" element={<PositionPage />} />
-        <Route path="network/:positionId" element={<NetworkPage />} />
+        <Route path="position/:id" element={<PositionPage />} />
+        {/* <Route path="network/:positionId" element={<NetworkPage />} />
         <Route path="event/:id" element={<EventPage />} /> */}
         <Route path="replay" element={<ReplayPage />} />
         <Route path="geofences" element={<GeofencesPage />} />
