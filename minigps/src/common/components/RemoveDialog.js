@@ -6,8 +6,6 @@ import { useTranslation } from './LocalizationProvider';
 import { useCatch } from '../../reactHelper';
 import { snackBarDurationLongMs } from '../util/duration';
 
-let base64 = require('base-64');
-
 const useStyles = makeStyles((theme) => ({
   button: {
     height: 'auto',
@@ -24,9 +22,8 @@ const RemoveDialog = ({
   const t = useTranslation();
 
   const handleRemove = useCatch(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
-    const response = await fetch(`http://159.65.134.221:8082/api/${endpoint}/${itemId}`, { method: 'DELETE' , headers: headers});
+
+    const response = await fetch(`/api/${endpoint}/${itemId}`, { method: 'DELETE' });
     if (response.ok) {
       onResult(true);
     } else {

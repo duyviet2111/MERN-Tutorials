@@ -17,13 +17,11 @@ import ColumnSelect from './components/ColumnSelect';
 import usePersistedState from '../common/util/usePersistedState';
 import { useCatch } from '../reactHelper';
 import useReportStyles from './common/useReportStyles';
-import MapPositions from '../map copy/MapPositions';
-import MapView from '../map copy/core/MapView';
-import MapCamera from '../map copy/MapCamera';
+import MapPositions from '../map/MapPositions';
+import MapView from '../map/core/MapView';
+import MapCamera from '../map/MapCamera';
 import AddressValue from '../common/components/AddressValue';
 import TableShimmer from '../common/components/TableShimmer';
-
-let base64 = require('base-64');
 
 const columnsArray = [
   ['startTime', 'reportStartTime'],
@@ -49,8 +47,6 @@ const StopReportPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to, type }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ deviceId, from, to });
     if (type === 'export') {
       window.location.assign(`/api/reports/stops/xlsx?${query.toString()}`);
@@ -62,8 +58,8 @@ const StopReportPage = () => {
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`http://159.65.134.221:8082/api/reports/stops?${query.toString()}`, {
-          headers: headers,
+        const response = await fetch(`/api/reports/stops?${query.toString()}`, {
+          headers: { Accept: 'application/json' },
         });
         if (response.ok) {
           setItems(await response.json());

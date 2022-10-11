@@ -29,8 +29,6 @@ import { useCatch } from "../reactHelper";
 import useReportStyles from "./common/useReportStyles";
 import TableShimmer from "../common/components/TableShimmer";
 
-let base64 = require('base-64');
-
 const columnsArray = [
   ["deviceId", "sharedDevice"],
   ["startTime", "reportStartDate"],
@@ -65,23 +63,21 @@ const SummaryReportPage = () => {
   const volumeUnit = useAttributePreference('volumeUnit');
 
   const handleSubmit = useCatch(async ({ deviceIds, groupIds, from, to, type }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ from, to, daily });
     deviceIds.forEach((deviceId) => query.append('deviceId', deviceId));
     groupIds.forEach((groupId) => query.append('groupId', groupId));
     if (type === 'export') {
       window.location.assign(`/api/reports/summary/xlsx?${query.toString()}`);
     } else if (type === 'mail') {
-      const response = await fetch(`http://159.65.134.221:8082/api/reports/summary/mail?${query.toString()}`);
+      const response = await fetch(`/api/reports/summary/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
       }
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`http://159.65.134.221:8082/api/reports/summary?${query.toString()}`, {
-          headers: headers,
+        const response = await fetch(`/api/reports/summary?${query.toString()}`, {
+          headers: { Accept: 'application/json' },
         });
         if (response.ok) {
           setItems(await response.json());

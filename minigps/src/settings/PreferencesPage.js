@@ -10,11 +10,11 @@ import {
   useTranslation,
   useTranslationKeys,
 } from "../common/components/LocalizationProvider";
-import useMapStyles from "../map copy/core/useMapStyles";
+import useMapStyles from "../map/core/useMapStyles";
 import usePersistedState from "../common/util/usePersistedState";
 import { useSelector } from "react-redux";
 import { prefixString, unprefixString } from "../common/util/stringUtils";
-import useMapOverlays from "../map copy/overlay/useMapOverlays";
+import useMapOverlays from "../map/overlay/useMapOverlays";
 import {
   Accordion,
   AccordionSummary,
@@ -250,7 +250,7 @@ const PreferencesPage = () => {
               multiple
               value={soundEvents}
               onChange={(e) => setSoundEvents(e.target.value)}
-              endpoint="http://159.65.134.221:8082/api/notifications/types"
+              endpoint="/api/notifications/types"
               keyGetter={(it) => it.type}
               titleGetter={(it) => prefixString("event", it.type)}
               label={t("reportEventTypes")}

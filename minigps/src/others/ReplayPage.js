@@ -14,15 +14,13 @@ import FastForwardIcon from '@mui/icons-material/FastForward';
 import FastRewindIcon from '@mui/icons-material/FastRewind';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import MapView from '../map/MapView';
-import MapRoutePath from '../map copy/MapRoutePath';
-import MapPositions from '../map copy/MapPositions';
+import MapView from "../map/core/MapView";
+import MapRoutePath from '../map/MapRoutePath';
+import MapPositions from '../map/MapPositions';
 import { formatTime } from '../common/util/formatter';
 import ReportFilter from '../reports/components/ReportFilter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { useCatch } from '../reactHelper';
-
-let base64 = require('base-64');
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -125,13 +123,11 @@ const ReplayPage = () => {
   }, [index, positions]);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     setSelectedDeviceId(deviceId);
     setFrom(from);
     setTo(to);
     const query = new URLSearchParams({ deviceId, from, to });
-    const response = await fetch(`http://159.65.134.221:8082/api/positions?${query.toString()}`, {headers:headers});
+    const response = await fetch(`/api/positions?${query.toString()}`);
     if (response.ok) {
       setIndex(0);
       const positions = await response.json();

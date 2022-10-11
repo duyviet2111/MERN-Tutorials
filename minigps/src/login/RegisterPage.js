@@ -13,9 +13,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../common/components/LocalizationProvider';
-import { useCatch } from '../reactHelper';
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "../common/components/LocalizationProvider";
+import { useCatch } from "../reactHelper";
 // import axios from "axios";
 
 const Copyright = (props) => {
@@ -38,7 +38,6 @@ const Copyright = (props) => {
 
 const theme = createTheme();
 
-
 const RegisterPage = () => {
   const navigate = useNavigate();
   const t = useTranslation();
@@ -46,12 +45,10 @@ const RegisterPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isValidLength, setIsValidLength] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [isMatches, setIsMatches] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [failed, setFailed] = useState(false);
-  const [failMsg, setFailMsg] = useState('');
 
   // const handleSubmit = (e) => {
   //   e.preventDefault();
@@ -78,20 +75,23 @@ const RegisterPage = () => {
   //     });
   // };
   const handleSubmit = useCatch(async () => {
-    const response = await fetch('http://159.65.134.221:8082/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
     });
     if (response.ok) {
       // setDialogOpen(true);
       const user = await response.json();
-      const sendMailResponse = await fetch('http://159.65.134.221:8082/api/users/sendActiveCode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      },
-      navigate('/login'));
+      const sendMailResponse = await fetch(
+        "/api/users/sendActiveCode",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(user),
+        },
+        navigate("/login")
+      );
       if (!sendMailResponse.ok) {
         throw Error(await sendMailResponse.text());
       }
@@ -125,7 +125,7 @@ const RegisterPage = () => {
                   required
                   fullWidth
                   name="name"
-                  label={t('sharedName')}
+                  label={t("sharedName")}
                   autoFocus
                   value={name}
                   onChange={(event) => setName(event.target.value)}
@@ -135,11 +135,9 @@ const RegisterPage = () => {
                 <TextField
                   required
                   fullWidth
-                  error={failed}
-                  label={t('userEmail')}
+                  label={t("userEmail")}
                   name="email"
                   value={email}
-                  helperText={failed && failMsg}
                   onChange={(event) => setEmail(event.target.value)}
                 />
               </Grid>
@@ -147,9 +145,8 @@ const RegisterPage = () => {
                 <TextField
                   required
                   fullWidth
-                  error={failed}
                   name="password"
-                  label={t('userPassword')}
+                  label={t("userPassword")}
                   type="password"
                   value={password}
                   onChange={(event) => {
@@ -178,7 +175,6 @@ const RegisterPage = () => {
                     } else {
                       setIsValidPassword(false);
                     }
-
                     if (event.target.value === password) {
                       setIsMatches(true);
                     } else {
@@ -196,7 +192,7 @@ const RegisterPage = () => {
                       color="primary"
                     />
                   }
-                  label={t('passWordValidation')}
+                  label={t("passWordValidation")}
                 />
                 <FormControlLabel
                   control={
@@ -206,14 +202,14 @@ const RegisterPage = () => {
                       color="primary"
                     />
                   }
-                  label={t('passWordValidLength')}
+                  label={t("passWordValidLength")}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   name="confirmPassword"
-                  label={t('userConfirmPassword')}
+                  label={t("userConfirmPassword")}
                   type="password"
                   value={confirmPassword}
                   onChange={(event) => {
@@ -226,7 +222,7 @@ const RegisterPage = () => {
                   }}
                 />
                 <FormControlLabel
-                  label={t('passWordMatches')}
+                  label={t("passWordMatches")}
                   control={<Checkbox id="matches" checked={isMatches} />}
                 />
               </Grid>
@@ -244,7 +240,7 @@ const RegisterPage = () => {
               }
               sx={{ mt: 1, mb: 2 }}
             >
-             {t('loginRegister')}
+              {t("loginRegister")}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

@@ -30,8 +30,6 @@ import {
   import { useCatch } from '../reactHelper';
   import useServerAttributes from '../common/attributes/useServerAttributes';
 
-  let base64 = require('base-64');
-
   const useStyles = makeStyles((theme) => ({
     container: {
       marginTop: theme.spacing(2),
@@ -67,9 +65,7 @@ const ServerPage = () => {
     const [item, setItem] = useState({ ...original });
 
     const handleSave = useCatch(async () => {
-      let headers = new Headers();
-      headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
-        const response = await fetch('http://159.65.134.221:8082/api/server', {
+        const response = await fetch('/api/server', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' }, 
           body: JSON.stringify(item),
@@ -186,7 +182,7 @@ const ServerPage = () => {
                   value={item.attributes.timezone || ''}
                   emptyValue=""
                   onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, timezone: e.target.value } })}
-                  endpoint="http://159.65.134.221:8082/api/server/timezones"
+                  endpoint="/api/server/timezones"
                   keyGetter={(it) => it}
                   titleGetter={(it) => it}
                   label={t('sharedTimezone')}

@@ -48,7 +48,7 @@ const BottomMenu = () => {
 
   const handleLogout = async () => {
     setAnchorEl(null);
-    await fetch('/api/session', { method: 'DELETE' });
+    await fetch('/api/session', { method: 'DELETE'});
     navigate('/login');
     dispatch(sessionActions.updateUser(null));
   };

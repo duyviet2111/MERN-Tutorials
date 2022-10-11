@@ -4,8 +4,6 @@ import {
 import React, { useState } from 'react';
 import { useEffectAsync } from '../../reactHelper';
 
-let base64 = require('base-64');
-
 const SelectField = ({
   label,
   multiple,
@@ -21,10 +19,8 @@ const SelectField = ({
   const [items, setItems] = useState(data);
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     if (endpoint) {
-      const response = await fetch(endpoint, {headers: headers});
+      const response = await fetch(endpoint);
       if (response.ok) {
         setItems(await response.json());
       } else {

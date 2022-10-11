@@ -10,7 +10,7 @@ import { formatTime } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import PageLayout from '../common/components/PageLayout';
 import ReportsMenu from './components/ReportsMenu';
-// import usePositionAttributes from '../common/attributes/usePositionAttributes';
+import usePositionAttributes from '../common/attributes/usePositionAttributes';
 import { useCatch } from '../reactHelper';
 import { useAttributePreference } from '../common/util/preferences';
 import {
@@ -18,18 +18,16 @@ import {
 } from '../common/util/converter';
 import useReportStyles from './common/useReportStyles';
 
-let base64 = require('base-64');
-
 const ChartReportPage = () => {
   const classes = useReportStyles();
   const t = useTranslation();
 
-//   const positionAttributes = usePositionAttributes(t);
+  const positionAttributes = usePositionAttributes(t);
 
-//   const distanceUnit = useAttributePreference('distanceUnit');
-//   const altitudeUnit = useAttributePreference('altitudeUnit');
-//   const speedUnit = useAttributePreference('speedUnit');
-//   const volumeUnit = useAttributePreference('volumeUnit');
+  const distanceUnit = useAttributePreference('distanceUnit');
+  const altitudeUnit = useAttributePreference('altitudeUnit');
+  const speedUnit = useAttributePreference('speedUnit');
+  const volumeUnit = useAttributePreference('volumeUnit');
 
   const [items, setItems] = useState([]);
   const [type, setType] = useState('speed');
@@ -40,11 +38,9 @@ const ChartReportPage = () => {
   const valueRange = maxValue - minValue;
 
   const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ deviceId, from, to });
-    const response = await fetch(`http://159.65.134.221:8082/api/reports/route?${query.toString()}`, {
-      headers: headers,
+    const response = await fetch(`/api/reports/route?${query.toString()}`, {
+      headers: { Accept: 'application/json' },
     });
     if (response.ok) {
       const positions = await response.json();
@@ -52,32 +48,32 @@ const ChartReportPage = () => {
         const data = { ...position, ...position.attributes };
         const formatted = {};
         formatted.fixTime = formatTime(position.fixTime, 'HH:mm:ss');
-        // Object.keys(data).forEach((key) => {
-        //   const value = data[key];
-        //   if (typeof value === 'number') {
-        //     const definition = positionAttributes[key] || {};
-        //     switch (definition.dataType) {
-        //       case 'speed':
-        //         formatted[key] = speedFromKnots(value, speedUnit).toFixed(2);
-        //         break;
-        //       case 'altitude':
-        //         formatted[key] = altitudeFromMeters(value, altitudeUnit).toFixed(2);
-        //         break;
-        //       case 'distance':
-        //         formatted[key] = distanceFromMeters(value, distanceUnit).toFixed(2);
-        //         break;
-        //       case 'volume':
-        //         formatted[key] = volumeFromLiters(value, volumeUnit).toFixed(2);
-        //         break;
-        //       case 'hours':
-        //         formatted[key] = (value / 1000).toFixed(2);
-        //         break;
-        //       default:
-        //         formatted[key] = value;
-        //         break;
-        //     }
-        //   }
-        // });
+        Object.keys(data).forEach((key) => {
+          const value = data[key];
+          if (typeof value === 'number') {
+            const definition = positionAttributes[key] || {};
+            switch (definition.dataType) {
+              case 'speed':
+                formatted[key] = speedFromKnots(value, speedUnit).toFixed(2);
+                break;
+              case 'altitude':
+                formatted[key] = altitudeFromMeters(value, altitudeUnit).toFixed(2);
+                break;
+              case 'distance':
+                formatted[key] = distanceFromMeters(value, distanceUnit).toFixed(2);
+                break;
+              case 'volume':
+                formatted[key] = volumeFromLiters(value, volumeUnit).toFixed(2);
+                break;
+              case 'hours':
+                formatted[key] = (value / 1000).toFixed(2);
+                break;
+              default:
+                formatted[key] = value;
+                break;
+            }
+          }
+        });
         return formatted;
       });
       setItems(formattedPositions);
@@ -93,9 +89,9 @@ const ChartReportPage = () => {
           <FormControl fullWidth>
             <InputLabel>{t('reportChartType')}</InputLabel>
             <Select label={t('reportChartType')} value={type} onChange={(e) => setType(e.target.value)}>
-              {/* {Object.keys(positionAttributes).filter((key) => positionAttributes[key].type === 'number').map((key) => (
+              {Object.keys(positionAttributes).filter((key) => positionAttributes[key].type === 'number').map((key) => (
                 <MenuItem key={key} value={key}>{positionAttributes[key].name}</MenuItem>
-              ))} */}
+              ))}
             </Select>
           </FormControl>
         </div>
@@ -112,7 +108,7 @@ const ChartReportPage = () => {
               <XAxis dataKey="fixTime" />
               <YAxis type="number" tickFormatter={(value) => value.toFixed(2)} domain={[minValue - valueRange / 5, maxValue + valueRange / 5]} />
               <CartesianGrid strokeDasharray="3 3" />
-              {/* <Tooltip formatter={(value, key) => [value, positionAttributes[key].name]} /> */}
+              <Tooltip formatter={(value, key) => [value, positionAttributes[key].name]} />
               <Line type="monotone" dataKey={type} />
             </LineChart>
           </ResponsiveContainer>

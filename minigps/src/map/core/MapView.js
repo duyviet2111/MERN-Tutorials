@@ -2,11 +2,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
 import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
 import './MapView.css';
-import { SwitcherControl } from '../map copy/switcher/switcher';
-import { mapImages } from '../map copy/core/preloadImages';
-import usePersistedState, { savePersistedState } from '../common/util/usePersistedState';
-import useMapStyles from '../map copy/core/useMapStyles';
-import { useAttributePreference } from '../common/util/preferences';
+import { SwitcherControl } from '../../map/switcher/switcher';
+import { mapImages } from '../../map/core/preloadImages';
+import usePersistedState, { savePersistedState } from '../../common/util/usePersistedState';
+import useMapStyles from '../../map/core/useMapStyles';
+import { useAttributePreference } from '../../common/util/preferences';
 
 const element = document.createElement('div');
 element.style.width = '100%';

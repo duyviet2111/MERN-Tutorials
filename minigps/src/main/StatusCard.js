@@ -31,7 +31,6 @@ import usePositionAttributes from '../common/attributes/usePositionAttributes';
 import { devicesActions } from '../store';
 import { useCatch } from '../reactHelper';
 
-
 const useStyles = makeStyles((theme) => ({
   card: {
     width: theme.dimensions.popupMaxWidth,
@@ -98,25 +97,25 @@ const StatusCard = ({ deviceId, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
-
+  
   const readonly = useRestriction('readonly');
   const deviceReadonly = useDeviceReadonly();
-
   const device = useSelector((state) => state.devices.items[deviceId]);
   const position = useSelector((state) => state.positions.items[deviceId]);
-
+  
   const deviceImage = device?.attributes?.deviceImage;
-
+  
   const positionAttributes = usePositionAttributes(t);
   const [positionItems] = usePersistedState('positionItems', ['speed', 'address', 'totalDistance', 'course']);
-
+  // console.log(typeof positionItems, positionItems )
   const [anchorEl, setAnchorEl] = useState(null);
-
+  
   const [removing, setRemoving] = useState(false);
-
+  
+  // console.log('viet');
   const handleRemove = useCatch(async (removed) => {
     if (removed) {
-      const response = await fetch('http://159.65.134.221:8082/api/devices');
+      const response = await fetch('/api/devices');
       if (response.ok) {
         dispatch(devicesActions.refresh(await response.json()));
       } else {
@@ -153,19 +152,20 @@ const StatusCard = ({ deviceId, onClose }) => {
             <CardContent className={classes.content}>
               <Table size="small" classes={{ root: classes.table }}>
                 <TableBody>
-                  {positionItems.filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                    <StatusRow
+                  {positionItems.filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => ( //positionitems chứa name của status card
+                    // console.log('vv', key), các key trong mảng
+                    <StatusRow // Cột content trong status card
                       key={key}
                       name={positionAttributes[key].name}
                       content={(
                         <PositionValue
                           position={position}
-                          property={position.hasOwnProperty(key) ? key : null}
-                          attribute={position.hasOwnProperty(key) ? null : key}
+                          property={position.hasOwnProperty(key) ? key : null} // value của speed, address, course
+                          attribute={position.hasOwnProperty(key) ? null : key} // value của total distance
                         />
-                      )}
-                    />
-                  ))}
+                        )}
+                        />
+                        ))}
                 </TableBody>
               </Table>
             </CardContent>

@@ -14,8 +14,6 @@ import {
   import TableShimmer from '../common/components/TableShimmer';
   import { useAdministrator } from '../common/util/permissions';
 
-  let base64 = require('base-64');
-
   const useStyles = makeStyles((theme) => ({
     columnAction: {
       width: '1%',
@@ -49,11 +47,9 @@ const UsersPage = () => {
       };
 
       useEffectAsync(async () => {
-        let headers = new Headers();
-        headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
         setLoading(true);
         try {
-          const response = await fetch('http://159.65.134.221:8082/api/users', {headers: headers});
+          const response = await fetch('/api/users');
           if (response.ok) {
             setItems(await response.json());
           } else {

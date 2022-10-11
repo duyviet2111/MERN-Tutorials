@@ -31,7 +31,7 @@ import ServerPage from "./settings/ServerPage";
 import NotificationPage from "./settings/NotificationPage";
 import GeofencesPage from "./others/GeofencesPage";
 import PositionPage from "./others/PositionPage";
-
+import AccumulatorsPage from "./settings/AccumulatorsPage";
 const Navigation = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -89,7 +89,7 @@ const Navigation = () => {
         <Route path="geofences" element={<GeofencesPage />} />
 
         <Route path="settings">
-        {/* <Route path="accumulators/:deviceId" element={<AccumulatorsPage />} /> */}
+        <Route path="accumulators/:deviceId" element={<AccumulatorsPage />} />
           <Route path="calendars" element={<CalendarsPage />} />
           <Route path="calendar/:id" element={<CalendarPage />} />
           <Route path="calendar" element={<CalendarPage />} />

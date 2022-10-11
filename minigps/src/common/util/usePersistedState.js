@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 export const savePersistedState = (key, value) => {
   window.localStorage.setItem(key, JSON.stringify(value));
 };
+//localStoage.setItem() khi được truyền tên một khóa sẽ trả về các giá trị của khóa đó hoặc null nếu khóa không tồn tại.
 
 export default (key, defaultValue) => {
   const [value, setValue] = useState(() => {

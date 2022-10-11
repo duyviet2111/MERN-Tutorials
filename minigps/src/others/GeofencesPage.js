@@ -13,12 +13,12 @@ import Drawer from "@mui/material/Drawer";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { useNavigate } from "react-router-dom";
-import MapView from "../map/MapView";
-import MapCurrentLocation from '../map copy/MapCurrentLocation';
-import MapGeofenceEdit from '../map copy/MapGeofenceEdit';
+import MapView from "../map/core/MapView";
+import MapCurrentLocation from '../map/MapCurrentLocation';
+import MapGeofenceEdit from '../map/MapGeofenceEdit';
 import GeofencesList from './GeofencesList';
 import { useTranslation } from "../common/components/LocalizationProvider";
-import MapGeocoder from '../map copy/geocoder/MapGeocoder';
+import MapGeocoder from '../map/geocoder/MapGeocoder';
 import { errorsActions } from "../store";
 
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +78,7 @@ const GeofencesPage = () => {
         const area = `LINESTRING (${coordinates})`;
         const newItem = { name: '', area };
         try {
-            const response = await fetch('http://159.65.134.221:8082/api/geofences', {
+            const response = await fetch('/api/geofences', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newItem),

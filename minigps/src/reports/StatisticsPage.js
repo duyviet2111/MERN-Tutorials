@@ -13,8 +13,6 @@ import { useCatch } from '../reactHelper';
 import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
 
-let base64 = require('base-64');
-
 const columnsArray = [
   ['captureTime', 'statisticsCaptureTime'],
   ['activeUsers', 'statisticsActiveUsers'],
@@ -38,12 +36,10 @@ const StatisticsPage = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = useCatch(async ({ from, to }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     setLoading(true);
     try {
       const query = new URLSearchParams({ from, to });
-      const response = await fetch(`http://159.65.134.221:8082/api/statistics?${query.toString()}`, {headers:headers});
+      const response = await fetch(`/api/statistics?${query.toString()}`);
       if (response.ok) {
         setItems(await response.json());
       } else {

@@ -15,8 +15,6 @@ import CollectionFab from "./components/CollectionFab";
 import CollectionActions from "./components/CollectionActions";
 import TableShimmer from "../common/components/TableShimmer";
 
-let base64 = require('base-64');
-
 const useStyles = makeStyles((theme) => ({
   columnAction: {
     width: "1%",
@@ -33,11 +31,9 @@ const GroupsPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     setLoading(true);
     try {
-      const response = await fetch('http://159.65.134.221:8082/api/groups', {headers: headers});
+      const response = await fetch('/api/groups');
       if (response.ok) {
         setItems(await response.json());
       } else {

@@ -16,8 +16,6 @@ import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
 import { useAttributePreference } from '../common/util/preferences';
 
-let base64 = require('base-64');
-
 const columnsArray = [
   ['eventTime', 'positionFixTime'],
   ['type', 'sharedType'],
@@ -44,9 +42,7 @@ const EventReportPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
-    const response = await fetch('http://159.65.134.221:8082/api/notifications/types', {headers: headers});
+    const response = await fetch('/api/notifications/types');
     if (response.ok) {
       const types = await response.json();
       setAllEventTypes([...allEventTypes, ...types.map((it) => [it.type, prefixString('event', it.type)])]);
@@ -56,23 +52,19 @@ const EventReportPage = () => {
   }, []);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to, type }) => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const query = new URLSearchParams({ deviceId, from, to });
     eventTypes.forEach((it) => query.append('type', it));
     if (type === 'export') {
       window.location.assign(`/api/reports/events/xlsx?${query.toString()}`);
     } else if (type === 'mail') {
-      const response = await fetch(`http://159.65.134.221:8082/api/reports/events/mail?${query.toString()}`);
+      const response = await fetch(`/api/reports/events/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
       }
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`http://159.65.134.221:8082/api/reports/events?${query.toString()}`, {
-          headers: headers,
-        });
+        const response = await fetch(`/api/reports/events?${query.toString()}`);
         if (response.ok) {
           setItems(await response.json());
         } else {

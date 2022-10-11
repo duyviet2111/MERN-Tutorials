@@ -13,8 +13,6 @@ import alarm from './resources/alarm.mp3';
 import { eventsActions } from './store/events';
 import useFeatures from './common/util/useFeatures';
 
-let base64 = require('base-64');
-
 const SocketController = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,10 +32,8 @@ const SocketController = () => {
   const features = useFeatures();
 
   const connectSocket = () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${window.location.host}/api/socket`, {headers: headers});
+    const socket = new WebSocket(`${protocol}//${window.location.host}/api/socket`);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -45,15 +41,13 @@ const SocketController = () => {
     };
 
     socket.onerror = async () => {
-      let headers = new Headers();
-      headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
       dispatch(sessionActions.updateSocket(false));
-        const devicesResponse = await fetch('http://159.65.134.221:8082/api/devices',{headers: headers});
+      const devicesResponse = await fetch('/api/devices');
       if (devicesResponse.ok) {
         dispatch(devicesActions.update(await devicesResponse.json()));
       }
-      const positionsResponse = await fetch('http://159.65.134.221:8082/api/positions', {
-        headers: headers,
+      const positionsResponse = await fetch('/api/positions', {
+        headers: { 'Content-Type': 'application/json' },
       });
       if (positionsResponse.ok) {
         dispatch(positionsActions.update(await positionsResponse.json()));
@@ -79,11 +73,9 @@ const SocketController = () => {
   };
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     if (authenticated) {
-      // console.log("in call api" , authenticated)
-      const response = await fetch('http://159.65.134.221:8082/api/devices',{headers:headers} );
+      // console.log('in call api', authenticated);
+      const response = await fetch('/api/devices');
       if (response.ok) {
         dispatch(devicesActions.refresh(await response.json()));
       } else {
@@ -97,12 +89,10 @@ const SocketController = () => {
         }
       };
     }
-    const response = await fetch('http://159.65.134.221:8082/api/session');
-    // console.log("viet" , response);
+    const response = await fetch('/api/session');
     if (response.ok) {
       dispatch(sessionActions.updateUser(await response.json()));
-    } 
-    else {
+    } else {
       navigate('/login');
     }
     return null;

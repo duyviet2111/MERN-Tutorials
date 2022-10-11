@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import moment from 'moment';
-import MapView from "../map/MapView";
+import MapView from "../map/core/MapView";
 import MapCurrentLocation from "../map/MapCurrentLocation";
 import "./MainPage.css";
 import usePersistedState from "../common/util/usePersistedState";
@@ -21,6 +21,7 @@ import {
   Checkbox,
   Badge,
 } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ListIcon from "@mui/icons-material/ViewList";
 import { makeStyles } from "@mui/styles";
 import TuneIcon from '@mui/icons-material/Tune';
@@ -33,6 +34,22 @@ import EventsDrawer from './EventsDrawer';
 import StatusCard from './StatusCard';
 import { useTranslation } from "../common/components/LocalizationProvider";
 import BottomMenu from '../common/components/BottomMenu';
+import { useNavigate } from 'react-router-dom';
+import { useDeviceReadonly } from '../common/util/permissions';
+import { useTheme } from '@mui/material/styles';
+import MapPositions from '../map/MapPositions';
+import MapDirection from '../map/MapDirection';
+import MapOverlay from '../map/overlay/MapOverlay';
+import MapGeocoder from '../map/geocoder/MapGeocoder';
+import MapScale from '../map/MapScale';
+import MapNotification from '../map/notification/MapNotification';
+import MapSelectedDevice from '../map/main/MapSelectedDevice';
+import MapAccuracy from '../map/main/MapAccuracy';
+import MapGeofence from '../map/main/MapGeofence';
+import MapLiveRoutes from '../map/main/MapLiveRoutes';
+import MapDefaultCamera from '../map/main/MapDefaultCamera';
+import PoiMap from '../map/main/PoiMap';
+import { devicesActions } from '../store';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,11 +151,18 @@ const MainPage = () => {
   const t = useTranslation();
   const filterRef = useRef();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const theme = useTheme();
 
   const features = useFeatures();
+  // const [mapOnSelect] = usePersistedState('mapOnSelect', false);
+
+  const [mapGeofences] = usePersistedState('mapGeofences', true);
+  const [mapLiveRoutes] = usePersistedState('mapLiveRoutes', false);
+
+  const deviceReadonly = useDeviceReadonly();
 
   const positions = useSelector((state) => state.positions.items);
-
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [filteredPositions, setFilteredPositions] = useState([]);
   const [filterKeyword, setFilterKeyword] = useState('');
@@ -151,19 +175,28 @@ const MainPage = () => {
   const groups = useSelector((state) => state.groups.items);
   const devices = useSelector((state) => state.devices.items);
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
-
+  
+  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
   const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
   const [filterMap, setFilterMap] = usePersistedState('filterMap', false);
+  
+  const eventHandler = useCallback(() => setEventsOpen(true), [setEventsOpen]);
+  const eventsAvailable = useSelector((state) => !!state.events.items.length);
 
   const handleClose = () => {
     setDevicesOpen(!devicesOpen);
   };
 
+  const onClick = useCallback((_, deviceId) => {
+    dispatch(devicesActions.select(deviceId));
+  }, [dispatch]);
+  
+
   useEffect(() => {
     const filtered = Object.values(devices)
-      .filter((device) => !filterStatuses.length || filterStatuses.includes(device.status))
-      .filter((device) => !filterGroups.length || filterGroups.includes(device.groupId))
-      .filter((device) => `${device.name} ${device.uniqueId}`.toLowerCase().includes(filterKeyword.toLowerCase()));
+    .filter((device) => !filterStatuses.length || filterStatuses.includes(device.status))
+    .filter((device) => !filterGroups.length || filterGroups.includes(device.groupId))
+    .filter((device) => `${device.name} ${device.uniqueId}`.toLowerCase().includes(filterKeyword.toLowerCase()));
     if (filterSort === 'lastUpdate') {
       filtered.sort((device1, device2) => {
         const time1 = device1.lastUpdate ? moment(device1.lastUpdate).valueOf() : 0;
@@ -175,12 +208,27 @@ const MainPage = () => {
     setFilteredPositions(filterMap
       ? filtered.map((device) => positions[device.id]).filter(Boolean)
       : Object.values(positions));
-  }, [devices, filterKeyword, filterStatuses, filterGroups, filterSort, filterMap]);
+    }, [devices, filterKeyword, filterStatuses, filterGroups, filterSort, filterMap]);
 
   return (
-    <div>
-      <MapView />
+    <div className={classes.root}>
+        <MapView>
+        <MapOverlay />
+        {mapGeofences && <MapGeofence />}
+        <MapAccuracy />
+        {mapLiveRoutes && <MapLiveRoutes />}
+        <MapPositions positions={filteredPositions} onClick={onClick} showStatus />
+        {selectedPosition && selectedPosition.course && (
+          <MapDirection position={selectedPosition} />
+        )}
+        <MapDefaultCamera />
+        <MapSelectedDevice />
+        {/* <PoiMap /> */}
+      </MapView>
+      <MapScale />
       <MapCurrentLocation />
+      <MapGeocoder />
+      {!features.disableEvents && <MapNotification enabled={eventsAvailable} onClick={eventHandler} />}
       <Button
         variant="contained"
         // color={phone ? 'secondary' : 'primary'}
@@ -201,9 +249,9 @@ const MainPage = () => {
       >
         <Paper square elevation={3} className={classes.toolbarContainer}>
           <Toolbar className={classes.toolbar} disableGutters>
-            {/* <IconButton edge="start" sx={{ mr: 2 }} onClick={handleClose}>
+            <IconButton edge="start" sx={{ mr: 2 }} onClick={handleClose}>
               <ArrowBackIcon />
-            </IconButton> */}
+            </IconButton>
             <OutlinedInput
               ref={filterRef}
               placeholder={t('sharedSearchDevices')}
@@ -276,7 +324,7 @@ const MainPage = () => {
               </div>
             </Popover>
             <IconButton
-              //  onClick={() => navigate('/settings/device')} disabled={deviceReadonly}
+               onClick={() => navigate('/settings/device')} disabled={deviceReadonly}
                >
               <AddIcon />
             </IconButton>
@@ -297,7 +345,7 @@ const MainPage = () => {
         <div className={classes.statusCard}>
           <StatusCard
             deviceId={selectedDeviceId}
-            // onClose={() => dispatch(devicesActions.select(null))}
+            onClose={() => dispatch(devicesActions.select(null))}
           />
         </div>
       )}

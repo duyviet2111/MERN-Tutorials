@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  Button,
-  TextField,
-} from "@mui/material";
+import {InputLabel,Select, MenuItem,FormControl,Button, TextField,} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Link from "@mui/material/Link";
@@ -19,13 +12,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import usePersistedState from "../common/util/usePersistedState";
-import {
-  useLocalization,
-  useTranslation,
-} from "../common/components/LocalizationProvider";
+import { useLocalization, useTranslation,} from "../common/components/LocalizationProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { sessionActions } from "../store";
-// import {nativePostMessage } from "../common/components/NativeInterface";
+
 const Copyright = (props) => {
   return (
     <Typography
@@ -69,14 +59,13 @@ const LoginPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://159.65.134.221:8082/api/session', {
+      const response = await fetch('/api/session', {
         method: 'POST',
         body: new URLSearchParams(`email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`),
       });
       if (response.ok) {
         const user = await response.json();
         dispatch(sessionActions.updateUser(user));
-        // nativePostMessage('login');
         navigate('/');
       } else {
         if (response.status === 400) {

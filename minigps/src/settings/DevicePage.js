@@ -50,7 +50,7 @@ const DevicePage = () => {
 
     const handleFiles = useCatch(async (files) => {
         if (files.length > 0) {
-          const response = await fetch(`http://159.65.134.221:8082/api/devices/${item.id}/image`, {
+          const response = await fetch(`/api/devices/${item.id}/image`, {
             method: 'POST',
             body: files[0],
           });

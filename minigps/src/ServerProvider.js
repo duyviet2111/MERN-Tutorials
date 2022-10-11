@@ -16,7 +16,7 @@ const ServerProvider = ({
   useEffectAsync(async () => {
     if (!error) {
       try {
-        const response = await fetch('http://159.65.134.221:8082/api/server');
+        const response = await fetch('/api/server');
         if (response.ok) {
           dispatch(sessionActions.updateServer(await response.json())); 
         } else {

@@ -13,8 +13,6 @@ import { geofenceToFeature, geometryToArea } from './core/mapUtil';
 import { errorsActions, geofencesActions } from '../store';
 import { useCatchCallback } from '../reactHelper';
 
-let base64 = require('base-64');
-
 const draw = new MapboxDraw({
   displayControlsDefault: false,
   controls: {
@@ -47,9 +45,7 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
   const geofences = useSelector((state) => state.geofences.items);
 
   const refreshGeofences = useCatchCallback(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
-    const response = await fetch('http://159.65.134.221:8082/api/geofences', {headers: headers});
+    const response = await fetch('/api/geofences');
     if (response.ok) {
       dispatch(geofencesActions.refresh(await response.json()));
     } else {

@@ -74,7 +74,7 @@ const GroupPage = () => {
               <SelectField
                 value={item.groupId || 0}
                 onChange={(event) => setItem({ ...item, groupId: Number(event.target.value) })}
-                endpoint="http://159.65.134.221:8082/api/groups"
+                endpoint="/api/groups"
                 label={t('groupParent')}
               />
             </AccordionDetails>
@@ -93,16 +93,16 @@ const GroupPage = () => {
               </AccordionSummary>
               <AccordionDetails className={classes.details}>
                 <LinkField
-                  endpointAll="http://159.65.134.221:8082/api/geofences"
-                  endpointLinked={`http://159.65.134.221:8082/api/geofences?groupId=${item.id}`}
+                  endpointAll="/api/geofences"
+                  endpointLinked={`/api/geofences?groupId=${item.id}`}
                   baseId={item.id}
                   keyBase="groupId"
                   keyLink="geofenceId"
                   label={t('sharedGeofences')}
                 />
                 <LinkField
-                  endpointAll="http://159.65.134.221:8082/api/notifications"
-                  endpointLinked={`http://159.65.134.221:8082/api/notifications?groupId=${item.id}`}
+                  endpointAll="/api/notifications"
+                  endpointLinked={`/api/notifications?groupId=${item.id}`}
                   baseId={item.id}
                   keyBase="groupId"
                   keyLink="notificationId"
@@ -111,8 +111,8 @@ const GroupPage = () => {
                 />
                 {!features.disableDrivers && (
                   <LinkField
-                    endpointAll="http://159.65.134.221:8082/api/drivers"
-                    endpointLinked={`http://159.65.134.221:8082/api/drivers?groupId=${item.id}`}
+                    endpointAll="/api/drivers"
+                    endpointLinked={`/api/drivers?groupId=${item.id}`}
                     baseId={item.id}
                     keyBase="groupId"
                     keyLink="driverId"
@@ -121,8 +121,8 @@ const GroupPage = () => {
                 )}
                 {!features.disableComputedAttributes && (
                   <LinkField
-                    endpointAll="http://159.65.134.221:8082/api/attributes/computed"
-                    endpointLinked={`http://159.65.134.221:8082/api/attributes/computed?groupId=${item.id}`}
+                    endpointAll="/api/attributes/computed"
+                    endpointLinked={`/api/attributes/computed?groupId=${item.id}`}
                     baseId={item.id}
                     keyBase="groupId"
                     keyLink="attributeId"
@@ -131,8 +131,8 @@ const GroupPage = () => {
                   />
                 )}
                 <LinkField
-                  endpointAll="http://159.65.134.221:8082/api/commands"
-                  endpointLinked={`http://159.65.134.221:8082/api/commands?groupId=${item.id}`}
+                  endpointAll="/api/commands"
+                  endpointLinked={`/api/commands?groupId=${item.id}`}
                   baseId={item.id}
                   keyBase="groupId"
                   keyLink="commandId"
@@ -141,8 +141,8 @@ const GroupPage = () => {
                 />
                 {!features.disableMaintenance && (
                   <LinkField
-                    endpointAll="http://159.65.134.221:8082/api/maintenance"
-                    endpointLinked={`http://159.65.134.221:8082/api/maintenance?groupId=${item.id}`}
+                    endpointAll="/api/maintenance"
+                    endpointLinked={`/api/maintenance?groupId=${item.id}`}
                     baseId={item.id}
                     keyBase="groupId"
                     keyLink="maintenanceId"

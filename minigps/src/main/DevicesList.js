@@ -26,10 +26,9 @@ import {
   formatAlarm, formatBoolean, formatPercentage, formatStatus, getStatusColor,
 } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import { mapIconKey, mapIcons } from '../map copy/core/preloadImages';
+import { mapIconKey, mapIcons } from '../map/core/preloadImages';
 import { useAdministrator } from '../common/util/permissions';
 
-let base64 = require('base-64');
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -78,8 +77,11 @@ const DeviceRow = ({ data, index, style }) => {
   const admin = useAdministrator();
 
   const { items } = data;
+  // console.log('items: ', typeof items, {items});
   const item = items[index];
+  // console.log('item: ', typeof item, item);
   const position = useSelector((state) => state.positions.items[item.id]);
+  // console.log('vvv', position)
 
   const secondaryText = () => {
     if (item.status === 'online' || !item.lastUpdate) {
@@ -87,7 +89,7 @@ const DeviceRow = ({ data, index, style }) => {
     }
     return moment(item.lastUpdate).fromNow();
   };
-
+  
   return (
     <div style={style}>
       <Box>
@@ -132,7 +134,7 @@ const DeviceRow = ({ data, index, style }) => {
             </IconButton>
           </Tooltip>
           {position && (
-            <div>
+            <>
               {position.attributes.hasOwnProperty('alarm') && (
                 <Tooltip title={`${t('eventAlarm')}: ${formatAlarm(position.attributes.alarm, t)}`}>
                   <IconButton size="small">
@@ -170,7 +172,7 @@ const DeviceRow = ({ data, index, style }) => {
                   </IconButton>
                 </Tooltip>
               )}
-            </div>
+            </>
           )}
         </ListItemButton>
       </Box>
@@ -197,9 +199,7 @@ const DevicesList = ({ devices }) => {
   }, []);
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
-    const response = await fetch('http://159.65.134.221:8082/api/devices?userId=1', {headers: headers});
+    const response = await fetch('/api/devices?userId=1');
     if (response.ok) {
       dispatch(devicesActions.refresh(await response.json()));
     } else {

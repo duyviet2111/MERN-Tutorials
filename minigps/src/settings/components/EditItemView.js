@@ -8,8 +8,6 @@ import { useCatch, useEffectAsync } from '../../reactHelper';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 import PageLayout from '../../common/components/PageLayout';
 
-let base64 = require('base-64');
-
 const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: theme.spacing(2),
@@ -39,11 +37,9 @@ const EditItemView = ({
   const { id } = useParams();
 
   useEffectAsync(async () => {
-    let headers = new Headers();
-    headers.set('Authorization', 'Basic ' + base64.encode("admin:admin"  ));
     if (!item) {
       if (id) {
-        const response = await fetch(`http://159.65.134.221:8082/api/${endpoint}/${id}`, {headers: headers});
+        const response = await fetch(`/api/${endpoint}/${id}`);
         if (response.ok) {
           setItem(await response.json());
         } else {

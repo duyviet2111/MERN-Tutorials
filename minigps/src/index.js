@@ -7,15 +7,14 @@ import { CssBaseline, ThemeProvider, StyledEngineProvider } from '@mui/material'
 import store from './store';
 import { LocalizationProvider } from './common/components/LocalizationProvider';
 import ErrorHandler from './common/components/ErrorHandler';
-import reportWebVitals from "./reportWebVitals";
 import theme from './common/theme';
 import Navigation from './Navigation';
-// import preloadImages from './map/core/preloadImages';
+import preloadImages from './map/core/preloadImages';
 import ServerProvider from './ServerProvider';
 import MainPage from './main/MainPage'
 import PreferencesPage from './settings/PreferencesPage'
 import NotificationsPage from './settings/NotificationsPage'
-import BottomMenu2 from './common/components/BottomMenu2'
+import AccumulatorsPage from './settings/AccumulatorsPage'
 import UserPage from './settings/UserPage'
 import RegisterPage from './login/RegisterPage'
 import ResetPasswordPage from './login/ResetPasswordPage'
@@ -27,10 +26,9 @@ import SummaryReportPage from "./reports/SummaryReportPage";
 import ChartReportPage from "./reports/ChartReportPage";
 import StatisticsPage from "./reports/StatisticsPage";
 import LoginPage from "./login/LoginPage";
-// import LoginPage from './login/LoginPage'
 
 
-// preloadImages();
+preloadImages();
 const base = window.location.href.indexOf('modern') >= 0 ? '/modern' : '/';
 
 
@@ -47,7 +45,6 @@ root.render(
                 {/* <MainPage /> */}
                 {/* <LoginPage /> */}
                 {/* <RegisterPage /> */}
-                {/* <BottomMenu2 /> */}
                 {/* <PreferencesPage /> */}
                 {/* <NotificationsPage /> */}
                 {/* <UserPage /> */}
@@ -59,6 +56,7 @@ root.render(
                 {/* <SummaryReportPage /> */}
                 {/* <ChartReportPage /> */}
                 {/* <StatisticsPage /> */}
+                {/* <AccumulatorsPage /> */}
               </BrowserRouter>
             </ServerProvider>
             <ErrorHandler />
@@ -67,4 +65,4 @@ root.render(
       </LocalizationProvider>
     </Provider>
 );
-reportWebVitals();
+
