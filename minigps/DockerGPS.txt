@@ -1,0 +1,34 @@
+Xây dựng Dockerfile để deploy dự án lên docker:
+- Tạo một file Dockerfile, file .dockerignore ngang hàng với folder src, cài extension docker.
+- Trong file .dockerignore sẽ chứa thông tin các file mà docker sẽ không sao chép vào: node_modules; .dockerignore; build; npm-debug.log
+
+* Trong file Dockerfile:
+
+FROM node:16.14.0 // Xác định khi xây dựng images sẽ dựa vào đâu ( Ở đây là dự án Reactjs sẽ xây dựng dựa trên node, phiên bản 16.14.0)
+
+# Create app directory ( Địa chỉ thư mục sẽ chứa code ở các máy có hệ điều hành khác, VD: Ubuntu sẽ tạo ra một thư mục /app chứa source code trong đó)
+WORKDIR /app
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+# ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json . (Copy file package.json)
+RUN npm install ( Các câu lệnh được cấu hình sẵn để chạy, ở đây là npm install để cài đặt các depen của dự án trong file package.json)
+
+#To bundle your app’s source code inside the Docker image, use the COPY instruction:
+COPY . . (copy toàn bộ thư mục của source code )
+
+#Your app binds to port 3000 so you’ll use the EXPOSE instruction to have it mapped by the docker daemon:
+EXPOSE 3000
+CMD ["npm", "start"] (Câu lệnh để chạy ứng dụng)
+
+* Xây dựng Dockerfile xong sẽ build images:
+
+    docker build -t duyviet2111/minigps .
+
+- Trong khi build có thể sẽ có lỗi, nếu build lại nên dùng thêm option --no-cache trước -t trong lệnh build.
+
+* Sau khi build images, tạo container chạy dự án với port 3000.
+
+    docker run -p 3000:3000 duyviet2111/minigps
