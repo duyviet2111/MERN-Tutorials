@@ -32,3 +32,5 @@ CMD ["npm", "start"] (Câu lệnh để chạy ứng dụng)
 * Sau khi build images, tạo container chạy dự án với port 3000.
 
     docker run -p 3000:3000 duyviet2111/minigps
+
+* Document: https://docs.docker.com/get-started/
