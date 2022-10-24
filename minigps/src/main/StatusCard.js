@@ -77,9 +77,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StatusRow = ({ name, content }) => {
+const StatusRow = ({name,content }) => {
   const classes = useStyles();
-
+   
   return (
     <TableRow>
       <TableCell className={classes.cell}>

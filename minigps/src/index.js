@@ -11,22 +11,6 @@ import theme from './common/theme';
 import Navigation from './Navigation';
 import preloadImages from './map/core/preloadImages';
 import ServerProvider from './ServerProvider';
-import MainPage from './main/MainPage'
-import PreferencesPage from './settings/PreferencesPage'
-import NotificationsPage from './settings/NotificationsPage'
-import AccumulatorsPage from './settings/AccumulatorsPage'
-import UserPage from './settings/UserPage'
-import RegisterPage from './login/RegisterPage'
-import ResetPasswordPage from './login/ResetPasswordPage'
-import RouteReportPage from './reports/RouteReportPage'
-import EventReportPage from './reports/EventReportPage'
-import TripReportPage from "./reports/TripReportPage";
-import StopReportPage from "./reports/StopReportPage";
-import SummaryReportPage from "./reports/SummaryReportPage";
-import ChartReportPage from "./reports/ChartReportPage";
-import StatisticsPage from "./reports/StatisticsPage";
-import LoginPage from "./login/LoginPage";
-
 
 preloadImages();
 const base = window.location.href.indexOf('modern') >= 0 ? '/modern' : '/';
@@ -42,21 +26,6 @@ root.render(
             <ServerProvider>
               <BrowserRouter basename={base}>
                 <Navigation />
-                {/* <MainPage /> */}
-                {/* <LoginPage /> */}
-                {/* <RegisterPage /> */}
-                {/* <PreferencesPage /> */}
-                {/* <NotificationsPage /> */}
-                {/* <UserPage /> */}
-                {/* <ResetPasswordPage /> */}
-                {/* <RouteReportPage /> */}
-                {/* <EventReportPage /> */}
-                {/* <TripReportPage /> */}
-                {/* <StopReportPage /> */}
-                {/* <SummaryReportPage /> */}
-                {/* <ChartReportPage /> */}
-                {/* <StatisticsPage /> */}
-                {/* <AccumulatorsPage /> */}
               </BrowserRouter>
             </ServerProvider>
             <ErrorHandler />

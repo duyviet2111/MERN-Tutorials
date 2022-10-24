@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import moment from 'moment';
+import moment from "moment";
 import MapView from "../map/core/MapView";
 import MapCurrentLocation from "../map/MapCurrentLocation";
 import "./MainPage.css";
@@ -20,36 +20,39 @@ import {
   FormControlLabel,
   Checkbox,
   Badge,
+  Switch,
+  // Label,
 } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ListIcon from "@mui/icons-material/ViewList";
 import { makeStyles } from "@mui/styles";
-import TuneIcon from '@mui/icons-material/Tune';
-import { useDispatch, useSelector } from 'react-redux';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
-import DevicesList from './DevicesList';
-import useFeatures from '../common/util/useFeatures';
-import EventsDrawer from './EventsDrawer';
-import StatusCard from './StatusCard';
+import TuneIcon from "@mui/icons-material/Tune";
+import { useDispatch, useSelector } from "react-redux";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import DevicesList from "./DevicesList";
+import useFeatures from "../common/util/useFeatures";
+import EventsDrawer from "./EventsDrawer";
+import StatusCard from "./StatusCard";
 import { useTranslation } from "../common/components/LocalizationProvider";
-import BottomMenu from '../common/components/BottomMenu';
-import { useNavigate } from 'react-router-dom';
-import { useDeviceReadonly } from '../common/util/permissions';
-import { useTheme } from '@mui/material/styles';
-import MapPositions from '../map/MapPositions';
-import MapDirection from '../map/MapDirection';
-import MapOverlay from '../map/overlay/MapOverlay';
-import MapGeocoder from '../map/geocoder/MapGeocoder';
-import MapScale from '../map/MapScale';
-import MapNotification from '../map/notification/MapNotification';
-import MapSelectedDevice from '../map/main/MapSelectedDevice';
-import MapAccuracy from '../map/main/MapAccuracy';
-import MapGeofence from '../map/main/MapGeofence';
-import MapLiveRoutes from '../map/main/MapLiveRoutes';
-import MapDefaultCamera from '../map/main/MapDefaultCamera';
-import PoiMap from '../map/main/PoiMap';
-import { devicesActions } from '../store';
+import BottomMenu from "../common/components/BottomMenu";
+import { useNavigate } from "react-router-dom";
+import { useDeviceReadonly } from "../common/util/permissions";
+import { useTheme } from "@mui/material/styles";
+import MapPositions from "../map/MapPositions";
+import MapDirection from "../map/MapDirection";
+import MapOverlay from "../map/overlay/MapOverlay";
+import MapGeocoder from "../map/geocoder/MapGeocoder";
+import MapScale from "../map/MapScale";
+import MapNotification from "../map/notification/MapNotification";
+import MapSelectedDevice from "../map/main/MapSelectedDevice";
+import MapAccuracy from "../map/main/MapAccuracy";
+import MapGeofence from "../map/main/MapGeofence";
+import MapLiveRoutes from "../map/main/MapLiveRoutes";
+import MapDefaultCamera from "../map/main/MapDefaultCamera";
+import PoiMap from "../map/main/PoiMap";
+import { devicesActions } from "../store";
+import MapRoutePath from "../map/MapRoutePath";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -144,6 +147,13 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(2),
     width: theme.dimensions.drawerWidthTablet,
   },
+  switchReplay: {
+    position: "absolute",
+    right: "0px",
+    padding: "10px",
+    display: "flex",
+    top: theme.spacing(32),
+  },
 }));
 
 const MainPage = () => {
@@ -157,29 +167,42 @@ const MainPage = () => {
   const features = useFeatures();
   // const [mapOnSelect] = usePersistedState('mapOnSelect', false);
 
-  const [mapGeofences] = usePersistedState('mapGeofences', true);
-  const [mapLiveRoutes] = usePersistedState('mapLiveRoutes', false);
+  const [mapGeofences] = usePersistedState("mapGeofences", true);
+  const [mapLiveRoutes] = usePersistedState("mapLiveRoutes", false);
 
   const deviceReadonly = useDeviceReadonly();
-
   const positions = useSelector((state) => state.positions.items);
+
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [filteredPositions, setFilteredPositions] = useState([]);
-  const [filterKeyword, setFilterKeyword] = useState('');
+  const [filterKeyword, setFilterKeyword] = useState("");
   const [filterStatuses, setFilterStatuses] = useState([]);
   const [filterGroups, setFilterGroups] = useState([]);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [eventsOpen, setEventsOpen] = useState(false);
+  
+
+  // switchbutton
+  const [checked, setChecked] = useState(false);
+  const [location, setLocation] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [show, setShow] = useState(true);
 
   const groups = useSelector((state) => state.groups.items);
   const devices = useSelector((state) => state.devices.items);
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
-  
-  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
-  const [filterSort, setFilterSort] = usePersistedState('filterSort', '');
-  const [filterMap, setFilterMap] = usePersistedState('filterMap', false);
-  
+
+  console.log('Check' , selectedDeviceId ,checked)
+
+  const selectedPosition = filteredPositions.find(
+    (position) => selectedDeviceId && position.deviceId === selectedDeviceId
+  );
+  console.log("selectedDeviceId ", selectedDeviceId);
+
+  const [filterSort, setFilterSort] = usePersistedState("filterSort", "");
+  const [filterMap, setFilterMap] = usePersistedState("filterMap", false);
+
   const eventHandler = useCallback(() => setEventsOpen(true), [setEventsOpen]);
   const eventsAvailable = useSelector((state) => !!state.events.items.length);
 
@@ -187,48 +210,126 @@ const MainPage = () => {
     setDevicesOpen(!devicesOpen);
   };
 
-  const onClick = useCallback((_, deviceId) => {
-    dispatch(devicesActions.select(deviceId));
-  }, [dispatch]);
-  
+  const onClick = useCallback(
+    (_, deviceId) => {
+      dispatch(devicesActions.select(deviceId));
+    },
+    [dispatch]
+  );
+
+   // hàm cho nút switch
+  const handleChangeTest = async (deviceId) => {
+    console.log("handleChangeTest : ", deviceId);
+    const query = new URLSearchParams({ deviceId });
+    const response = await fetch(`/api/positions?${query.toString()}`);
+
+    if (response.ok) {
+      setIndex(0);
+      const positions = await response.json();
+      setLocation(positions);
+      console.log('response', response , positions);
+      if (positions.length) {
+        setShow(false);
+      } else {
+        throw Error(t("sharedNoData"));
+      }
+    } else {
+      throw Error(await response.text());
+    }
+  };
+ 
+  // const handleChangeTest = async (deviceId) => {
+  //   // setSelectDeviceId(selectDeviceId);
+  //   setFrom(selectedFrom);
+  //   setTo(selectedTo);
+  //   console.log("[handleChange : ", deviceId);
+  //   const query = new URLSearchParams({ deviceId });
+  //   const response = await fetch(`/api/positions?${query.toString()}`);
+  //   if (response.ok) {
+  //     setIndex(0);
+  //     const positions = await response.json();
+  //     setPosition2(positions);
+  //     console.log('response', response , positions);
+  //     if (positions?.length) {
+  //       setShow(false);
+  //     } else {
+  //       throw Error(t("sharedNoData"));
+  //     }
+  //   } else {
+  //     throw Error(await response.text());
+  //   }
+  // };
 
   useEffect(() => {
     const filtered = Object.values(devices)
-    .filter((device) => !filterStatuses.length || filterStatuses.includes(device.status))
-    .filter((device) => !filterGroups.length || filterGroups.includes(device.groupId))
-    .filter((device) => `${device.name} ${device.uniqueId}`.toLowerCase().includes(filterKeyword.toLowerCase()));
-    if (filterSort === 'lastUpdate') {
+      .filter(
+        (device) =>
+          !filterStatuses.length || filterStatuses.includes(device.status)
+      )
+      .filter(
+        (device) =>
+          !filterGroups.length || filterGroups.includes(device.groupId)
+      )
+      .filter((device) =>
+        `${device.name} ${device.uniqueId}`
+          .toLowerCase()
+          .includes(filterKeyword.toLowerCase())
+      );
+    if (filterSort === "lastUpdate") {
       filtered.sort((device1, device2) => {
-        const time1 = device1.lastUpdate ? moment(device1.lastUpdate).valueOf() : 0;
-        const time2 = device2.lastUpdate ? moment(device2.lastUpdate).valueOf() : 0;
+        const time1 = device1.lastUpdate
+          ? moment(device1.lastUpdate).valueOf()
+          : 0;
+        const time2 = device2.lastUpdate
+          ? moment(device2.lastUpdate).valueOf()
+          : 0;
         return time2 - time1;
       });
     }
     setFilteredDevices(filtered);
-    setFilteredPositions(filterMap
-      ? filtered.map((device) => positions[device.id]).filter(Boolean)
-      : Object.values(positions));
-    }, [devices, filterKeyword, filterStatuses, filterGroups, filterSort, filterMap]);
+    setFilteredPositions(
+      filterMap
+        ? filtered.map((device) => positions[device.id]).filter(Boolean)
+        : Object.values(positions)
+    );
+  }, [ devices, filterKeyword, filterStatuses, filterGroups, filterSort, filterMap,]);
 
   return (
     <div className={classes.root}>
-        <MapView>
+      <MapView>
         <MapOverlay />
         {mapGeofences && <MapGeofence />}
         <MapAccuracy />
         {mapLiveRoutes && <MapLiveRoutes />}
-        <MapPositions positions={filteredPositions} onClick={onClick} showStatus />
+        <MapPositions
+          positions={filteredPositions}
+          onClick={onClick}
+          showStatus
+        />
         {selectedPosition && selectedPosition.course && (
           <MapDirection position={selectedPosition} />
         )}
         <MapDefaultCamera />
         <MapSelectedDevice />
         {/* <PoiMap /> */}
+        <MapRoutePath positions={location} />
       </MapView>
       <MapScale />
       <MapCurrentLocation />
       <MapGeocoder />
-      {!features.disableEvents && <MapNotification enabled={eventsAvailable} onClick={eventHandler} />}
+      {!features.disableEvents && (
+        <MapNotification enabled={eventsAvailable} onClick={eventHandler} />
+      )}
+      {show && (
+        <Switch
+          className={classes.switchReplay}
+          checked={checked}
+          onChange={(e) => {
+            setChecked(!checked);
+            handleChangeTest(selectedDeviceId);
+          }}
+        />
+      )}
       <Button
         variant="contained"
         // color={phone ? 'secondary' : 'primary'}
@@ -238,7 +339,7 @@ const MainPage = () => {
         disableElevation
       >
         <ListIcon />
-        <div className={classes.sidebarToggleText}>{t('deviceTitle')}</div>
+        <div className={classes.sidebarToggleText}>{t("deviceTitle")}</div>
       </Button>
       <Paper
         square
@@ -254,18 +355,25 @@ const MainPage = () => {
             </IconButton>
             <OutlinedInput
               ref={filterRef}
-              placeholder={t('sharedSearchDevices')}
+              placeholder={t("sharedSearchDevices")}
               value={filterKeyword}
               onChange={(event) => setFilterKeyword(event.target.value)}
-              endAdornment={(
+              endAdornment={
                 <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setFilterAnchorEl(filterRef.current)}>
-                    <Badge color="info" variant="dot" invisible={!filterStatuses.length && !filterGroups.length}>
+                  <IconButton
+                    size="small"
+                    onClick={() => setFilterAnchorEl(filterRef.current)}
+                  >
+                    <Badge
+                      color="info"
+                      variant="dot"
+                      invisible={!filterStatuses.length && !filterGroups.length}
+                    >
                       <TuneIcon fontSize="small" />
                     </Badge>
                   </IconButton>
                 </InputAdornment>
-              )}
+              }
               size="small"
               fullWidth
             />
@@ -274,73 +382,94 @@ const MainPage = () => {
               anchorEl={filterAnchorEl}
               onClose={() => setFilterAnchorEl(null)}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
             >
               <div className={classes.filterPanel}>
                 <FormControl>
-                  <InputLabel>{t('deviceStatus')}</InputLabel>
+                  <InputLabel>{t("deviceStatus")}</InputLabel>
                   <Select
-                    label={t('deviceStatus')}
+                    label={t("deviceStatus")}
                     value={filterStatuses}
                     onChange={(e) => setFilterStatuses(e.target.value)}
                     multiple
                   >
-                    <MenuItem value="online">{t('deviceStatusOnline')}</MenuItem>
-                    <MenuItem value="offline">{t('deviceStatusOffline')}</MenuItem>
-                    <MenuItem value="unknown">{t('deviceStatusUnknown')}</MenuItem>
+                    <MenuItem value="online">
+                      {t("deviceStatusOnline")}
+                    </MenuItem>
+                    <MenuItem value="offline">
+                      {t("deviceStatusOffline")}
+                    </MenuItem>
+                    <MenuItem value="unknown">
+                      {t("deviceStatusUnknown")}
+                    </MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <InputLabel>{t('settingsGroups')}</InputLabel>
+                  <InputLabel>{t("settingsGroups")}</InputLabel>
                   <Select
-                    label={t('settingsGroups')}
+                    label={t("settingsGroups")}
                     value={filterGroups}
                     onChange={(e) => setFilterGroups(e.target.value)}
                     multiple
                   >
-                    {Object.values(groups).map((group) => (<MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>))}
+                    {Object.values(groups).map((group) => (
+                      <MenuItem key={group.id} value={group.id}>
+                        {group.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <InputLabel>{t('sharedSortBy')}</InputLabel>
+                  <InputLabel>{t("sharedSortBy")}</InputLabel>
                   <Select
-                    label={t('sharedSortBy')}
+                    label={t("sharedSortBy")}
                     value={filterSort}
                     onChange={(e) => setFilterSort(e.target.value)}
                     displayEmpty
                   >
-                    <MenuItem value="">{'\u00a0'}</MenuItem>
-                    <MenuItem value="lastUpdate">{t('deviceLastUpdate')}</MenuItem>
+                    <MenuItem value="">{"\u00a0"}</MenuItem>
+                    <MenuItem value="lastUpdate">
+                      {t("deviceLastUpdate")}
+                    </MenuItem>
                   </Select>
                 </FormControl>
                 <FormGroup>
                   <FormControlLabel
-                    control={<Checkbox checked={filterMap} onChange={(e) => setFilterMap(e.target.checked)} />}
-                    label={t('sharedFilterMap')}
+                    control={
+                      <Checkbox
+                        checked={filterMap}
+                        onChange={(e) => setFilterMap(e.target.checked)}
+                      />
+                    }
+                    label={t("sharedFilterMap")}
                   />
                 </FormGroup>
               </div>
             </Popover>
             <IconButton
-               onClick={() => navigate('/settings/device')} disabled={deviceReadonly}
-               >
+              onClick={() => navigate("/settings/device")}
+              disabled={deviceReadonly}
+            >
               <AddIcon />
             </IconButton>
             <IconButton onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
+              <CloseIcon />
+            </IconButton>
           </Toolbar>
         </Paper>
         <div className={classes.deviceList}>
           <DevicesList devices={filteredDevices} />
         </div>
       </Paper>
+
       <div className={classes.bottomMenu}>
-          <BottomMenu />
-        </div>
-      {!features.disableEvents && <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />}
+        <BottomMenu />
+      </div>
+      {!features.disableEvents && (
+        <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
+      )}
       {selectedDeviceId && (
         <div className={classes.statusCard}>
           <StatusCard

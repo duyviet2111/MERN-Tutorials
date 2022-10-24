@@ -16,7 +16,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import { useCatch } from "../reactHelper";
-// import axios from "axios";
 
 const Copyright = (props) => {
   return (

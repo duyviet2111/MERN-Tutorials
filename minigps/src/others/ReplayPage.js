@@ -78,7 +78,7 @@ const ReplayPage = () => {
   const timerRef = useRef();
 
   const defaultDeviceId = useSelector((state) => state.devices.selectedId);
-
+  // console.log(defaultDeviceId);
   const [positions, setPositions] = useState([]);
   const [index, setIndex] = useState(0);
   const [selectedDeviceId, setSelectedDeviceId] = useState(defaultDeviceId);
@@ -87,6 +87,7 @@ const ReplayPage = () => {
   const [expanded, setExpanded] = useState(true);
   const [playing, setPlaying] = useState(false);
 
+  // Lấy tên Devices
   const deviceName = useSelector((state) => {
     if (selectedDeviceId) {
       const device = state.devices.items[selectedDeviceId];
@@ -96,12 +97,13 @@ const ReplayPage = () => {
     }
     return null;
   });
-
+// Ấn vào dấu mark sẽ điều hướng sang trang positions
   const onClick = useCallback((positionId) => {
     if (positionId) {
       navigate(`/position/${positionId}`);
     }
   }, [navigate]);
+
 
   useEffect(() => {
     if (playing && positions.length > 0) {
@@ -177,7 +179,9 @@ const ReplayPage = () => {
         <Paper className={classes.content} square>
           {!expanded ? (
             <>
+              {/* Header của paper replay */}
               <Typography variant="subtitle1" align="center">{deviceName}</Typography>
+              {/* thanh slider chạy như thanh mp3 */}
               <Slider
                 className={classes.slider}
                 max={positions.length - 1}
@@ -186,6 +190,7 @@ const ReplayPage = () => {
                 value={index}
                 onChange={(_, index) => setIndex(index)}
               />
+              {/* Đoạn dưới hiển thị thanh điều chỉnh slider */}
               <div className={classes.controls}>
                 {`${index + 1}/${positions.length}`}
                 <IconButton onClick={() => setIndex((index) => index - 1)} disabled={playing || index <= 0}>

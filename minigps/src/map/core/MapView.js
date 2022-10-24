@@ -80,7 +80,6 @@ const switcher = new SwitcherControl(
     
     // console.log('viet', activeMapStyles);
     
-    
     useEffect(() => {
       const filteredStyles = mapStyles.filter((style) => style.available && activeMapStyles.includes(style.id));
       switcher.updateStyles(filteredStyles, defaultMapStyle);

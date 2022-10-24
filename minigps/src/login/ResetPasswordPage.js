@@ -14,11 +14,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 import useQuery from "../common/util/useQuery";
 import { useTranslation } from "../common/components/LocalizationProvider";
 import { snackBarDurationShortMs } from "../common/util/duration";
 import { useCatch } from '../reactHelper';
+// import axios from "axios";
 
 const Copyright = (props) => {
   return (
@@ -51,59 +51,59 @@ const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleSubmit = (event) => {
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   if (!token) {
+  //     axios({
+  //       method: "POST",
+  //       url: "http://159.65.134.221:8082/api/password/reset",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+  //       },
+  //       data: new URLSearchParams(`email=${encodeURIComponent(email)}`),
+  //     })
+  //       .then(function (response) {
+  //         console.log(response);
+  //       })
+  //       .catch(function (error) {
+  //         console.log(error);
+  //       });
+  //   } else {
+  //     axios({
+  //       method: "POST",
+  //       url: "http://159.65.134.221:8082/api/password/update",
+  //       headers: {
+  //         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+  //       },
+  //       data: new URLSearchParams(
+  //         `token=${encodeURIComponent(token)}&password=${encodeURIComponent(
+  //           password
+  //         )}`
+  //       ),
+  //     });
+  //   }
+  //   setSnackbarOpen(true);
+  // };
+  const handleSubmit = useCatch(async (event) => {
     event.preventDefault();
+    let response;
     if (!token) {
-      axios({
-        method: "POST",
-        url: "http://159.65.134.221:8082/api/password/reset",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        data: new URLSearchParams(`email=${encodeURIComponent(email)}`),
-      })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      response = await fetch('/api/password/reset', {
+        method: 'POST',
+        body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
+      });
     } else {
-      axios({
-        method: "POST",
-        url: "http://159.65.134.221:8082/api/password/update",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        data: new URLSearchParams(
-          `token=${encodeURIComponent(token)}&password=${encodeURIComponent(
-            password
-          )}`
-        ),
+      response = await fetch('/api/password/update', {
+        method: 'POST',
+        body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
       });
     }
-    setSnackbarOpen(true);
-  };
-  // const handleSubmit = useCatch(async (event) => {
-  //   event.preventDefault();
-  //   let response;
-  //   if (!token) {
-  //     response = await fetch('http://159.65.134.221:8082/api/password/reset', {
-  //       method: 'POST',
-  //       body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
-  //     });
-  //   } else {
-  //     response = await fetch('http://159.65.134.221:8082/api/password/update', {
-  //       method: 'POST',
-  //       body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
-  //     });
-  //   }
-  //   if (response.ok) {
-  //     // setSnackbarOpen(true);
-  //   } else {
-  //     throw Error(await response.text());
-  //   }
-  // });
+    if (response.ok) {
+      setSnackbarOpen(true);
+    } else {
+      throw Error(await response.text());
+    }
+  });
 
   return (
     <ThemeProvider theme={theme}>

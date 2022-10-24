@@ -28,7 +28,7 @@ const SelectField = ({
       }
     }
   }, []);
-  console.log(endpoint);
+  // console.log(endpoint);
   
   if (items) {
     return (

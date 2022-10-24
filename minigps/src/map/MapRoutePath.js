@@ -1,20 +1,22 @@
-import { useTheme } from '@mui/styles';
-import maplibregl from 'maplibre-gl';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { map } from './core/MapView';
+import { useTheme } from "@mui/styles";
+import maplibregl from "maplibre-gl";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { map } from "./core/MapView";
 
 const MapRoutePath = ({ positions }) => {
-  const id = 'replay';
+  const id = "replay";
 
   const theme = useTheme();
-
+  // Màu cho đường đi
   const reportColor = useSelector((state) => {
     const position = positions.find(() => true);
     if (position) {
-      const attributes = state.devices.items[position.deviceId]?.attributes;
+      const attributes = state.devices.items[position?.deviceId]?.attributes;
+      console.log("Check attributes", attributes, !attributes);
+
       if (attributes) {
-        const color = attributes['web.reportColor'];
+        const color = attributes["web.reportColor"];
         if (color) {
           return color;
         }
@@ -25,29 +27,29 @@ const MapRoutePath = ({ positions }) => {
 
   useEffect(() => {
     map.addSource(id, {
-      type: 'geojson',
+      type: "geojson",
       data: {
-        type: 'Feature',
+        type: "Feature",
         geometry: {
-          type: 'LineString',
+          type: "LineString",
           coordinates: [],
         },
       },
     });
+    // render đường đi
     map.addLayer({
       source: id,
       id,
-      type: 'line',
+      type: "line",
       layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
+        "line-join": "round",
+        "line-cap": "round",
       },
       paint: {
-        'line-color': ['get', 'color'],
-        'line-width': 2,
+        "line-color": ["get", "color"],
+        "line-width": 2,
       },
     });
-
     return () => {
       if (map.getLayer(id)) {
         map.removeLayer(id);
@@ -59,11 +61,14 @@ const MapRoutePath = ({ positions }) => {
   }, []);
 
   useEffect(() => {
-    const coordinates = positions.map((item) => [item.longitude, item.latitude]);
+    const coordinates = positions.map((item) => [
+      item.longitude,
+      item.latitude,
+    ]);
     map.getSource(id).setData({
-      type: 'Feature',
+      type: "Feature",
       geometry: {
-        type: 'LineString',
+        type: "LineString",
         coordinates,
       },
       properties: {
@@ -71,7 +76,10 @@ const MapRoutePath = ({ positions }) => {
       },
     });
     if (coordinates.length) {
-      const bounds = coordinates.reduce((bounds, item) => bounds.extend(item), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+      const bounds = coordinates.reduce(
+        (bounds, item) => bounds.extend(item),
+        new maplibregl.LngLatBounds(coordinates[0], coordinates[0])
+      );
       const canvas = map.getCanvas();
       map.fitBounds(bounds, {
         padding: Math.min(canvas.width, canvas.height) * 0.1,
