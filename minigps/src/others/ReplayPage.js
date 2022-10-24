@@ -134,6 +134,7 @@ const ReplayPage = () => {
       setIndex(0);
       const positions = await response.json();
       setPositions(positions);
+      console.log('positions', positions);
       if (positions.length) {
         setExpanded(false);
       } else {

@@ -13,7 +13,7 @@ const MapRoutePath = ({ positions }) => {
     const position = positions.find(() => true);
     if (position) {
       const attributes = state.devices.items[position?.deviceId]?.attributes;
-      console.log("Check attributes", attributes, !attributes);
+      console.log("Check attributes", attributes, position);
 
       if (attributes) {
         const color = attributes["web.reportColor"];
