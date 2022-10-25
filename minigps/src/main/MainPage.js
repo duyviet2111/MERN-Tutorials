@@ -156,16 +156,16 @@ const MainPage = () => {
   const features = useFeatures();
 
   const [mapOnSelect] = usePersistedState('mapOnSelect', false);
-
   const [mapGeofences] = usePersistedState('mapGeofences', true);
   const [mapLiveRoutes] = usePersistedState('mapLiveRoutes', false);
 
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.positions.items);
+  
   const [filteredPositions, setFilteredPositions] = useState([]);
   
-  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
   console.log("selectedDeviceId ", selectedDeviceId);
+  const selectedPosition = filteredPositions.find((position) => selectedDeviceId && position.deviceId === selectedDeviceId);
 
   const groups = useSelector((state) => state.groups.items);
   const devices = useSelector((state) => state.devices.items);
@@ -184,11 +184,12 @@ const MainPage = () => {
   const [devicesOpen, setDevicesOpen] = useState(false);
   const [eventsOpen, setEventsOpen] = useState(false);
 
-  //   // switchbutton
+  // Switch Button
   const [checked, setChecked] = useState(false);
   const [location, setLocation] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [show, setShow] = useState(true);
+
+  // const [index, setIndex] = useState(0);
+  // const [show, setShow] = useState(true);
 
   console.log('Check' , selectedDeviceId ,checked);
 
@@ -222,12 +223,11 @@ const MainPage = () => {
     const response = await fetch(`/api/positions?${query.toString()}`);
 
     if (response.ok) {
-      setIndex(0);
       const positions = await response.json();
       setLocation(positions);
       console.log('response', response , positions);
       if (positions.length) {
-        setShow(false);
+        // setShow(false);
       } else {
         throw Error(t("sharedNoData"));
       }
@@ -235,29 +235,7 @@ const MainPage = () => {
       throw Error(await response.text());
     }
   };
-  console.log('location: ', location);
- 
-//   // const handleChangeTest = async (deviceId) => {
-//   //   // setSelectDeviceId(selectDeviceId);
-//   //   setFrom(selectedFrom);
-//   //   setTo(selectedTo);
-//   //   console.log("[handleChange : ", deviceId);
-//   //   const query = new URLSearchParams({ deviceId });
-//   //   const response = await fetch(`/api/positions?${query.toString()}`);
-//   //   if (response.ok) {
-//   //     setIndex(0);
-//   //     const positions = await response.json();
-//   //     setPosition2(positions);
-//   //     console.log('response', response , positions);
-//   //     if (positions?.length) {
-//   //       setShow(false);
-//   //     } else {
-//   //       throw Error(t("sharedNoData"));
-//   //     }
-//   //   } else {
-//   //     throw Error(await response.text());
-//   //   }
-//   // };
+  // console.log('location: ', location);
 
   useEffect(() => {
     const filtered = Object.values(devices)
@@ -279,7 +257,7 @@ const MainPage = () => {
 
   return (
     <div className={classes.root}>
-      <MapView>
+        <MapView>
         <MapOverlay />
         {mapGeofences && <MapGeofence />}
         <MapAccuracy />
@@ -291,27 +269,23 @@ const MainPage = () => {
         <MapDefaultCamera />
         <MapSelectedDevice />
         {/* <PoiMap /> */}
-        <MapRoutePath positions={location} />
-         {/* {index < location.length && (
-          <MapPositions positions={[location[index]]} />
-        )} */}
+        {checked && (
+          <MapRoutePath positions={location} />
+        )}
       </MapView>
       <MapScale />
       <MapCurrentLocation />
       <MapGeocoder />
       {!features.disableEvents && <MapNotification enabled={eventsAvailable} onClick={eventHandler} />}
       {desktop && <MapPadding left={parseInt(theme.dimensions.drawerWidthDesktop, 10)} />}
-      {show && (
         <Switch
           className={classes.switchReplay}
-          checked={checked}
           disabled={!selectedDeviceId}
-          onChange={(e) => {
+          onChange={() => {
             setChecked(!checked);
             handleChangeTest(selectedDeviceId);
           }}
         />
-      )}
       <Button
         variant="contained"
         color={phone ? 'secondary' : 'primary'}

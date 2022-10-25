@@ -32,7 +32,7 @@ const EventReportPage = () => {
   const devices = useSelector((state) => state.devices.items);
   const geofences = useSelector((state) => state.geofences.items);
 
-  // const speedUnit = useAttributePreference('speedUnit');
+  const speedUnit = useAttributePreference('speedUnit');
 
   const [allEventTypes, setAllEventTypes] = useState([['allEvents', 'eventAll']]);
 
@@ -64,7 +64,9 @@ const EventReportPage = () => {
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`/api/reports/events?${query.toString()}`);
+        const response = await fetch(`/api/reports/events?${query.toString()}`, {
+          headers: { Accept: 'application/json' },
+        });
         if (response.ok) {
           setItems(await response.json());
         } else {
@@ -94,8 +96,8 @@ const EventReportPage = () => {
         switch (item.type) {
           case 'alarm':
             return t(prefixString('alarm', item.attributes.alarm));
-          // case 'deviceOverspeed':
-          //   return formatSpeed(item.attributes.speed, speedUnit, t);
+          case 'deviceOverspeed':
+            return formatSpeed(item.attributes.speed, speedUnit, t);
           case 'driverChanged':
             return item.attributes.driverUniqueId;
           case 'media':

@@ -81,7 +81,7 @@ const DeviceRow = ({ data, index, style }) => {
   const item = items[index];
   // console.log('item: ', typeof item, item);
   const position = useSelector((state) => state.positions.items[item.id]);
-  // console.log('vvv', position)
+  // console.log('position check: ', position)
 
   const secondaryText = () => {
     if (item.status === 'online' || !item.lastUpdate) {

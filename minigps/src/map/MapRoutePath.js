@@ -12,11 +12,12 @@ const MapRoutePath = ({ positions }) => {
   const reportColor = useSelector((state) => {
     const position = positions.find(() => true);
     if (position) {
-      const attributes = state.devices.items[position?.deviceId]?.attributes;
-      console.log("Check attributes", attributes, position);
+      const attributes = state.devices.items[position.deviceId]?.attributes;
+      // console.log("Check attributes", attributes, position);
 
       if (attributes) {
         const color = attributes["web.reportColor"];
+        // console.log("Type attribute", attributes);
         if (color) {
           return color;
         }
@@ -37,17 +38,27 @@ const MapRoutePath = ({ positions }) => {
       },
     });
     // render đường đi
+    // map.addLayer({
+    //   source: id,
+    //   id,
+    //   type: "line",
+    //   layout: {
+    //     "line-join": "round",
+    //     "line-cap": "round",
+    //   },
+    //   paint: {
+    //     "line-color": ["get", "color"],
+    //     "line-width": 2,
+    //   },
+    // });
     map.addLayer({
       source: id,
       id,
-      type: "line",
-      layout: {
-        "line-join": "round",
-        "line-cap": "round",
-      },
+      type: "circle",
       paint: {
-        "line-color": ["get", "color"],
-        "line-width": 2,
+        "circle-color": ["get", "color"],
+        "circle-radius": 5,
+        "circle-pitch-alignment": "viewport",
       },
     });
     return () => {

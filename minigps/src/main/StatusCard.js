@@ -100,19 +100,19 @@ const StatusCard = ({ deviceId, onClose }) => {
   
   const readonly = useRestriction('readonly');
   const deviceReadonly = useDeviceReadonly();
+
   const device = useSelector((state) => state.devices.items[deviceId]);
   const position = useSelector((state) => state.positions.items[deviceId]);
-  
+  // console.log("position check: ",typeof position, position);
   const deviceImage = device?.attributes?.deviceImage;
   
   const positionAttributes = usePositionAttributes(t);
   const [positionItems] = usePersistedState('positionItems', ['speed', 'address', 'totalDistance', 'course']);
-  // console.log(typeof positionItems, positionItems )
+  // console.log("positionItems Check: ", typeof [positionItems], [positionItems] )
   const [anchorEl, setAnchorEl] = useState(null);
   
   const [removing, setRemoving] = useState(false);
   
-  // console.log('viet');
   const handleRemove = useCatch(async (removed) => {
     if (removed) {
       const response = await fetch('/api/devices');

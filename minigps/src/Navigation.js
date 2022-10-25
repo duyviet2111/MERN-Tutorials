@@ -32,6 +32,7 @@ import NotificationPage from "./settings/NotificationPage";
 import GeofencesPage from "./others/GeofencesPage";
 import PositionPage from "./others/PositionPage";
 import AccumulatorsPage from "./settings/AccumulatorsPage";
+
 const Navigation = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

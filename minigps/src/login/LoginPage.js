@@ -26,6 +26,7 @@ import {
 } from "../common/components/LocalizationProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { sessionActions } from "../store";
+
 // thử nghiệm particiles
 import { useCallback } from "react";
 import Particles from "react-particles";
@@ -62,10 +63,10 @@ const LoginPage = () => {
   const particlesInit = useCallback(async (engine) => {
     await loadFull(engine);
   }, []);
-
   const particlesLoaded = useCallback(async (container) => {}, []);
 
   const { languages, language, setLanguage } = useLocalization();
+  // hàm object.entries trả về một array thuộc tính [key, value]
   const languageList = Object.entries(languages).map((values) => ({
     code: values[0],
     name: values[1].name,
@@ -73,6 +74,7 @@ const LoginPage = () => {
   const languageEnabled = useSelector(
     (state) => !state.session.server.attributes["ui.disableLoginLanguage"]
   );
+  // console.log("languageList check: ", languageList,  languages);
   const [email, setEmail] = usePersistedState("loginEmail", "");
   const [failed, setFailed] = useState(false);
   const [failMsg, setFailMsg] = useState("");
@@ -139,10 +141,11 @@ const LoginPage = () => {
             <Box component="form" noValidate sx={{ mt: 1 }}>
               <TextField
                 required
+                error={failed}
+                helperText={failed && failMsg}
                 variant="filled"
                 color="success"
                 focused
-                error={failed}
                 margin="normal"
                 label={t("userEmail")}
                 fullWidth
@@ -150,7 +153,6 @@ const LoginPage = () => {
                 autoComplete="email"
                 name="email"
                 autoFocus={!email}
-                helperText={failed && failMsg}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyUp={handleSpecialKey}
               />
@@ -221,7 +223,7 @@ const LoginPage = () => {
                     variant="contained"
                     href="/reset-password"
                   >
-                    {t("loginRegister")}
+                    {t("loginReset")}
                   </Button>
                 </Grid>
               </Grid>
